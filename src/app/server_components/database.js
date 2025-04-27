@@ -41,8 +41,6 @@ const translitDict = {
 };
 
 const db = new Database("database.db");
-let file = new File([], "NULL");
-let data = {};
 
 export async function transliterate(text) {
   let result = "";
@@ -95,6 +93,7 @@ export async function parseDocument(document) {
         result[result.length - 1][key] = row[key];
       }
     }
+    createTable(parseColumnNames(Object.keys(result[0])), parseColumnTypes(Object.values(result[0])));
     return result;
   }
 }
@@ -127,5 +126,10 @@ export async function insertRows(rows, columnNames) {
 
 export async function getData() {
   const sql = `SELECT * FROM data`;
+  return db.prepare(sql).all();
+}
+
+export async function executeQuery(query) {
+  const sql = `SELECT * FROM data WHERE ${query}`;
   return db.prepare(sql).all();
 }
