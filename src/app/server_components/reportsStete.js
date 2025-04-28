@@ -93,6 +93,11 @@ class ReportsState {
   addReport(name, sqlQuery) {
     this.reports.push(new Report(name, sqlQuery));
   }
+
+  //Геттеры для удобного доступа к отчетам
+  get reportNames() {
+    return this.reports.map((report) => report.name);
+  }
 }
 
 export default new ReportsState();

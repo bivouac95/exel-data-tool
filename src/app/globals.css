@@ -1,38 +1,53 @@
 @import "tailwindcss";
 
-
 :root {
-  --background: #ffffff;
-  --foreground: #232323;
-  --light-gray: #CCCCCC;
-  --gark-gray:#7E7E7E;
-  --green: #30a65f;
-  --lime: #6db643;
+  --col-width: 230px;
+  --col-amount: 4;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-green: var(--green);
-  --color-lime: var(--lime);
-  --color-light-gray: var(--light-gray);
-  --color-gark-gray: var(--gark-gray);
+  --color-background: #ffffff;
+  --color-foreground: #232323;
+  --color-gray: #F4F4F4;
+  --color-dark-gray:#7E7E7E;
+  --color-green: #30A65F;
+
+  --breakpoint-mobile-lg: 640px;
+  --breakpoint-sm: 1280px;
+  --breakpoint-md: 1440px;
+  --breakpoint-lg: 1920px;
+
+  --radius-d: 10px;
+}
+
+@layer utilities {
+  .body-width {
+    width: calc(var(--col-amount) * var(--col-width) + (var(--col-amount) - 1) * 20px);
+  }
+  .aside-width {
+    width: calc(var(--col-width) + (100vw - (var(--col-amount) * var(--col-width) + (var(--col-amount) - 1) * 20px)) / 2);
+  }
 }
 
 h1 {
-  color: var(--background);
-  font-size: 32px;
+  font-size: 48px;
   font-weight: 600;
-  font-style: italic;
   margin: 0;
   padding: 0;
   line-height: 1.0;
 }
 
+h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+}
+
 .regular {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 400;
-  line-height: 1.2;
+  line-height: 1.5;
   word-break: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
@@ -43,11 +58,15 @@ body {
   color: var(--foreground);
 }
 
-@media (min-width: 1124px) { 
-  h1 {
-    font-size: 48px;
+@media (min-width: 1440px) {
+  :root {
+    --col-amount: 6; 
+    --col-width: 200px;
   }
-  .regular {
-    font-size: 18px;
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --col-amount: 7; 
   }
 }
