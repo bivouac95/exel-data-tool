@@ -29,11 +29,13 @@ class InitialDataState {
     this.rows = [];
     this.columns = [];
     this.isLoaded = false;
+    this.isLoading = false;
     makeAutoObservable(this);
   }
 
   // Устанавливает состояние загрузки
   setLoaded(state) {
+    this.isLoading = !state;
     this.isLoaded = state;
   }
 
