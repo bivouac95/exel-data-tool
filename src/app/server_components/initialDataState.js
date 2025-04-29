@@ -34,9 +34,14 @@ class InitialDataState {
   }
 
   // Устанавливает состояние загрузки
-  setLoaded(state) {
-    this.isLoading = !state;
-    this.isLoaded = state;
+  startLoading() {
+    this.isLoaded = false;
+    this.isLoading = true;
+  }
+
+  finishLoading() {
+    this.isLoading = false;
+    this.isLoaded = true;
   }
 
   // Обрабатывает загруженный файл с данными
@@ -44,7 +49,7 @@ class InitialDataState {
     if (!file) return;
 
     try {
-      this.setLoaded(false);
+      this.startLoading();
       
       // Парсим файл и получаем сырые данные
       const json = await parseDocument(file);
@@ -54,11 +59,11 @@ class InitialDataState {
       this.initializeColumns(json);
       this.initializeRows(json);
       
-      this.setLoaded(true);
+      this.finishLoading();
       console.log("Данные успешно загружены и обработаны");
     } catch (error) {
       console.error("Ошибка при обработке файла:", error);
-      this.setLoaded(true);
+      this.finishLoading();
       throw error;
     }
   }

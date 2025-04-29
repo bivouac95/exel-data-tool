@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { nanoid } from "nanoid";
 import InitialDataState from "@/app/server_components/InitialDataState";
 import Table from "@/app/components/Table";
+import Hud from "./components/Hud";
 import { Grid } from "react-loader-spinner";
 
 const Home = observer(() => {
@@ -43,18 +44,16 @@ const Home = observer(() => {
           </div>
         ) : (
           <div className="col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
-            <Grid
-              height="50"
-              width="50"
-            />
+            <Grid height="50" width="50" />
           </div>
         )
       ) : (
-        <div className="col-start-2 md:col-start-3 col-span-3 flex flex-col gap-10">
+        <div className="col-span-3 md:col-span-6 lg:col-span-6 col-start-2 md:col-start-2 lg:col-start-2 overflow-visible">
           <Table
             headers={InitialDataState.columnNames}
             rows={InitialDataState.rows}
           />
+          <Hud />
         </div>
       )}
     </>
