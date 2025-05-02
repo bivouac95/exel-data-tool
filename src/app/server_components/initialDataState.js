@@ -16,9 +16,22 @@ class TableColumn {
 
 // Модель данных для строки таблицы
 class TableRow {
-  constructor(values) {
+  constructor(values, editing = false) {
     this.id = nanoid();
     this.values = values;
+    this.editing = editing;
+    makeAutoObservable(this);
+  }
+
+  changeValue(id, value) {
+    const index = this.values.findIndex(v => v.id === id);
+    if (index !== -1) {
+      this.values[index] = value;
+    }
+  }
+
+  setEdit(state){
+    this.editing = state;
   }
 }
 
@@ -30,6 +43,7 @@ class InitialDataState {
     this.columns = [];
     this.isLoaded = false;
     this.isLoading = false;
+    this.beingEdited = false;
     makeAutoObservable(this);
   }
 
@@ -47,7 +61,6 @@ class InitialDataState {
   // Обрабатывает загруженный файл с данными
   async handleDocumentUpload(file) {
     if (!file) return;
-
     try {
       this.startLoading();
       
@@ -68,8 +81,33 @@ class InitialDataState {
     }
   }
 
+  //Добавляет новую строку
+  addNewRow() {
+    console.log(this.rows.length);
+    
+    this.rows = [new TableRow(this.columns.map(() => ""), true), ...this.rows];
+    this.beingEdited = true;
+    console.log(this.rows.length);
+  }
+
+  //Удаляет строку
+  deleteRow(row) {
+    this.rows = this.rows.filter(r => r.id !== row.id);
+  }
+
+  //Изменить статус редактирования
+  stopEdit(cancel = false) {
+    if (cancel) {
+      this.rows = this.rows.filter(r => !r.editing);
+      this.beingEdited = false;
+    } else {
+      this.rows.forEach(r => r.editing = false);
+      this.beingEdited = false;
+    }
+  }
+
   // Создает таблицу в базе данных
-  async createTable() {
+  async createTableSQL() {
     await createTable(this.sqlColumnNames, this.columnTypes);
     await insertRows(this.rows.map(row => row.values), this.sqlColumnNames);
   }
@@ -88,7 +126,7 @@ class InitialDataState {
   }
 
   initializeRows(json) {
-    this.rows = json.slice(1).map(row => 
+    this.rows = json.map(row => 
       new TableRow(Object.values(row))
     );
   }

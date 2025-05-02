@@ -1,7 +1,6 @@
 "use client";
 
 import { observer } from "mobx-react-lite";
-import { nanoid } from "nanoid";
 import InitialDataState from "@/app/server_components/InitialDataState";
 import Table from "@/app/components/Table";
 import Hud from "./components/Hud";
@@ -44,13 +43,13 @@ const Home = observer(() => {
           </div>
         ) : (
           <div className="col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
-            <Grid height="50" width="50" />
+            <Grid height="50" width="50" className="bg-green"/>
           </div>
         )
       ) : (
-        <div className="col-span-3 md:col-span-6 lg:col-span-6 col-start-2 md:col-start-2 lg:col-start-2 overflow-visible">
+        <div className="col-start-2 md:col-start-2 lg:col-start-2">
           <Table
-            headers={InitialDataState.columnNames}
+            columns={InitialDataState.columns}
             rows={InitialDataState.rows}
           />
           <Hud />
