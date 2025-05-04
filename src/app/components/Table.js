@@ -49,8 +49,8 @@ const Table = observer(({ tableState }) => {
         {rows.map((row) => (
           <div
             key={row.id}
-            className={`min-h-12 flex flex-row gap-4 py-2.5 rounded-d ${
-              row.editing ? "bg-green/70" : "bg-gray"
+            className={`min-h-12 flex flex-row gap-4 py-2.5 box-border rounded-d bg-gray ${
+              row.editing ? "bg-green/30" : "bg-gray"
             }`}
           >
             {row.values.map((value) => (

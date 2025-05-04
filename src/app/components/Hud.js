@@ -34,7 +34,7 @@ const Hud = observer(() => {
         ) : (
           <Button
             variant="secondary"
-            className="w-10 h-10"
+            className="w-10 h-10 justify-center items-center"
             size="icon"
             onClick={() => InitialDataState.addNewRow()}
           >
@@ -44,19 +44,33 @@ const Hud = observer(() => {
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
 
-        <Button variant="secondary" className="w-10 h-10" size="icon" onClick={() => router.push("/report")}>
+        <Button
+          variant="secondary"
+          className="w-10 h-10 justify-center items-center"
+          size="icon"
+          onClick={() => router.push("/report")}
+        >
           <img src="/report.svg" alt="Отчет" />
         </Button>
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
 
-        <Button variant="secondary" className="w-10 h-10" size="icon">
+        <Button
+          variant="secondary"
+          className="w-10 h-10 justify-center items-center"
+          size="icon"
+          onClick={() => router.push("/report")}
+        >
           <img src="/search.svg" alt="Поиск" />
         </Button>
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
 
-        <Button variant="secondary" className="w-10 h-10" size="icon">
+        <Button
+          variant="secondary"
+          className="w-10 h-10 justify-center items-center"
+          size="icon"
+        >
           <img src="/download.svg" alt="Экспорт" />
         </Button>
 
@@ -64,7 +78,7 @@ const Hud = observer(() => {
 
         <Button
           variant="ghost bg-background/50"
-          className="w-10 h-10"
+          className="w-10 h-10 justify-center items-center"
           size="icon"
         >
           <img src="/dots.svg" alt="Другое" />

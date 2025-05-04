@@ -3,7 +3,6 @@
 import Link from "next/link";
 
 import InitialDataState from "@/app/server_components/InitialDataState";
-import { Button } from "@/components/ui/button";
 
 export default function Aside() {
   return (
@@ -44,9 +43,8 @@ export default function Aside() {
           <h2>Начать работу</h2>
           <ul className="flex flex-col gap-2.5">
             <li>
-              <Button
-                className="regular bg-green"
-                variant="ghost"
+              <span
+                className="cursor-pointer regular text-background"
                 onClick={() => {
                   const input = document.createElement("input");
                   input.type = "file";
@@ -68,12 +66,10 @@ export default function Aside() {
                 }}
               >
                 Загрузить таблицу
-              </Button>
+              </span>
             </li>
             <li>
-              <Button className="regular bg-green" variant="ghost">
-                Загрузить прессет
-              </Button>
+              <span className="cursor-pointer regular text-background">Загрузить прессет</span>
             </li>
           </ul>
         </div>
