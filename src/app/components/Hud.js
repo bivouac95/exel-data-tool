@@ -70,6 +70,7 @@ const Hud = observer(() => {
           variant="secondary"
           className="w-10 h-10 justify-center items-center"
           size="icon"
+          onClick={() => router.push("/export")}
         >
           <img src="/download.svg" alt="Экспорт" />
         </Button>

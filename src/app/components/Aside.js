@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-
+import { observer } from "mobx-react-lite";
 import InitialDataState from "@/app/server_components/InitialDataState";
 
-export default function Aside() {
+const Aside = observer(() => {
   return (
     <aside className="fixed z-10 left-0 aside-width h-dvh flex box-border p-5 pr-0 text-background">
       <main className="w-full h-full flex flex-col bg-green rounded-d gap-10">
@@ -39,41 +39,50 @@ export default function Aside() {
             </li>
           </ul>
         </nav>
-        <div className="flex flex-col gap-5 mx-5">
-          <h2>Начать работу</h2>
-          <ul className="flex flex-col gap-2.5">
-            <li>
-              <span
-                className="cursor-pointer regular text-background"
-                onClick={() => {
-                  const input = document.createElement("input");
-                  input.type = "file";
-                  input.click();
 
-                  input.onchange = () => {
-                    if (input.files) {
-                      const file = input.files[0];
-                      if (
-                        file.type ==
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                      ) {
-                        InitialDataState.handleDocumentUpload(file);
-                      } else {
-                        alert("Файл должен быть в формате .xlsx или .xls");
+        {!InitialDataState.isLoaded ? (
+          <div className="flex flex-col gap-5 mx-5">
+            <h2>Начать работу</h2>
+            <ul className="flex flex-col gap-2.5">
+              <li>
+                <span
+                  className="cursor-pointer regular text-background"
+                  onClick={() => {
+                    const input = document.createElement("input");
+                    input.type = "file";
+                    input.click();
+
+                    input.onchange = () => {
+                      if (input.files) {
+                        const file = input.files[0];
+                        if (
+                          file.type ==
+                          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        ) {
+                          InitialDataState.handleDocumentUpload(file);
+                        } else {
+                          alert("Файл должен быть в формате .xlsx или .xls");
+                        }
                       }
-                    }
-                  };
-                }}
-              >
-                Загрузить таблицу
-              </span>
-            </li>
-            <li>
-              <span className="cursor-pointer regular text-background">Загрузить прессет</span>
-            </li>
-          </ul>
-        </div>
+                    };
+                  }}
+                >
+                  Загрузить таблицу
+                </span>
+              </li>
+              <li>
+                <span className="cursor-pointer regular text-background">
+                  Загрузить прессет
+                </span>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <></>
+        )}
       </main>
     </aside>
   );
-}
+});
+
+export default Aside;
