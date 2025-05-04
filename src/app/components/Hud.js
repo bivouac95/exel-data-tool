@@ -1,11 +1,37 @@
+"use client";
+
+import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
 import InitialDataState from "../server_components/InitialDataState";
+import { useRouter } from "next/navigation";
 
-export default function Hud() {
+const Hud = observer(() => {
+  const router = useRouter();
+
   return (
-    <div className="fixed bottom-0 left-0 w-screen flex justify-center items-center p-5">
+    <div className="fixed z-10 bottom-0 left-0 w-screen flex justify-center items-center p-5">
       <nav className="flex flex-row gap-5 rounded-d bg-foreground/70  py-2.5 px-10 items-center">
-        <div>
+        {InitialDataState.beingEdited ? (
+          <>
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() => InitialDataState.stopEdit(false)}
+            >
+              <span className="regular">Добавить</span>
+            </Button>
+
+            <div className="w-[1px] h-8 border-l-[2px] border-background" />
+
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() => InitialDataState.stopEdit(true)}
+            >
+              <span className="regular">Отменить</span>
+            </Button>
+          </>
+        ) : (
           <Button
             variant="secondary"
             className="w-10 h-10"
@@ -14,44 +40,38 @@ export default function Hud() {
           >
             <img src="/plus.svg" alt="Добавить" />
           </Button>
-        </div>
+        )}
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
 
-        <div>
-          <Button variant="secondary" className="w-10 h-10" size="icon">
-            <img src="/report.svg" alt="Отчет" />
-          </Button>
-        </div>
+        <Button variant="secondary" className="w-10 h-10" size="icon" onClick={() => router.push("/report")}>
+          <img src="/report.svg" alt="Отчет" />
+        </Button>
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
 
-        <div>
-          <Button variant="secondary" className="w-10 h-10" size="icon">
-            <img src="/search.svg" alt="Поиск" />
-          </Button>
-        </div>
+        <Button variant="secondary" className="w-10 h-10" size="icon">
+          <img src="/search.svg" alt="Поиск" />
+        </Button>
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
 
-        <div>
-          <Button variant="secondary" className="w-10 h-10" size="icon">
-            <img src="/download.svg" alt="Экспорт" />
-          </Button>
-        </div>
+        <Button variant="secondary" className="w-10 h-10" size="icon">
+          <img src="/download.svg" alt="Экспорт" />
+        </Button>
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
 
-        <div>
-          <Button
-            variant="ghost bg-background/50"
-            className="w-10 h-10"
-            size="icon"
-          >
-            <img src="/dots.svg" alt="Другое" />
-          </Button>
-        </div>
+        <Button
+          variant="ghost bg-background/50"
+          className="w-10 h-10"
+          size="icon"
+        >
+          <img src="/dots.svg" alt="Другое" />
+        </Button>
       </nav>
     </div>
   );
-}
+});
+
+export default Hud;

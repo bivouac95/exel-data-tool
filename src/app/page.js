@@ -49,8 +49,7 @@ const Home = observer(() => {
       ) : (
         <div className="col-start-2 md:col-start-2 lg:col-start-2">
           <Table
-            columns={InitialDataState.columns}
-            rows={InitialDataState.rows}
+            tableState={InitialDataState}
           />
           <Hud />
         </div>

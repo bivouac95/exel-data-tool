@@ -1,9 +1,39 @@
-import { nanoid } from "nanoid";
-import { observer } from "mobx-react-lite";
+"use client";
 
-const Table = observer(({ columns, rows }) => {
+import { observer } from "mobx-react-lite";
+import { useState, useRef, useEffect } from "react";
+import InitialDataState from "../server_components/InitialDataState";
+
+const Table = observer(({ tableState }) => {
+  const columns = tableState.columns;
+  const rows = tableState.rows;
+  const inputRef = useRef(null);
+  const [editingCell, setEditingCell] = useState(null); // { rowId, cellId }
+  
+  // Автоматически фокусируем инпут при появлении
+  useEffect(() => {
+    if (editingCell && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editingCell]);
+
+  const handleCellClick = (rowId, cellId) => {
+    setEditingCell({ rowId, cellId});
+  };
+
+  const handleCellChange = (rowId, cellId, newValue) => {
+    tableState.rows.find(row => row.id === rowId).changeValue(cellId, newValue);
+  };
+  
+  const handleCellKeyDown = (e) => {
+    if (e.key === "Enter") {
+      setEditingCell(null);
+    }
+  };
+
   return (
-    <div className="absolute -z-10 flex flex-col gap-1.5">
+    <div className="absolute flex flex-col gap-1.5">
       <div className="flex flex-row gap-4 py-5 bg-gray rounded-d">
         {columns.map((column) => (
           <div
@@ -25,10 +55,22 @@ const Table = observer(({ columns, rows }) => {
           >
             {row.values.map((value) => (
               <div
-                key={nanoid()}
-                className="w-[var(--col-width)] flex box-border px-2.5"
+                key={value.id}
+                className="relative w-[var(--col-width)] flex box-border px-2.5 cursor-pointer"
+                onClick={() => handleCellClick(row.id, value.id)}
               >
-                <span className="truncate w-full regular">{value}</span>
+                {editingCell?.rowId === row.id && editingCell?.cellId === value.id ? (
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={value.value}
+                    onChange={(e) => handleCellChange(row.id, value.id, e.target.value)}
+                    onKeyDown={(e) => handleCellKeyDown(e)}
+                    className="absolute left-0 -top-2.5 regular w-full min-h-12 px-2.5 py-1.5 border-2 bg-background border-green"
+                  />
+                ) : (
+                  <span className="truncate w-full regular">{value.value}</span>
+                )}
               </div>
             ))}
           </div>

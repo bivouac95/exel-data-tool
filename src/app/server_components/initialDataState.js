@@ -18,7 +18,7 @@ class TableColumn {
 class TableRow {
   constructor(values, editing = false) {
     this.id = nanoid();
-    this.values = values;
+    this.values = values.map(v => ({ id: nanoid(), value: v }));
     this.editing = editing;
     makeAutoObservable(this);
   }
@@ -26,7 +26,7 @@ class TableRow {
   changeValue(id, value) {
     const index = this.values.findIndex(v => v.id === id);
     if (index !== -1) {
-      this.values[index] = value;
+      this.values[index] = {id: id, value: value};
     }
   }
 
@@ -99,11 +99,11 @@ class InitialDataState {
   stopEdit(cancel = false) {
     if (cancel) {
       this.rows = this.rows.filter(r => !r.editing);
-      this.beingEdited = false;
     } else {
       this.rows.forEach(r => r.editing = false);
-      this.beingEdited = false;
     }
+
+    this.beingEdited = false;
   }
 
   // Создает таблицу в базе данных

@@ -7,14 +7,16 @@ import { Button } from "@/components/ui/button";
 
 export default function Aside() {
   return (
-    <aside className="fixed left-0 aside-width h-dvh flex box-border p-5 pr-0 text-background">
+    <aside className="fixed z-10 left-0 aside-width h-dvh flex box-border p-5 pr-0 text-background">
       <main className="w-full h-full flex flex-col bg-green rounded-d gap-10">
         <section className="flex flex-col gap-5 mx-5 mt-5">
-          <h1>
-            РосЛес
-            <br />
-            панель
-          </h1>
+          <Link href="/" className="regular">
+            <h1>
+              РосЛес
+              <br />
+              панель
+            </h1>
+          </Link>
           <p className="regular">Центр защиты леса Забайкальского края</p>
         </section>
         <div className="w-full h-[2px] bg-background" />
@@ -46,23 +48,23 @@ export default function Aside() {
                 className="regular bg-green"
                 variant="ghost"
                 onClick={() => {
-                    const input = document.createElement("input");
-                      input.type = "file";
-                      input.click();
+                  const input = document.createElement("input");
+                  input.type = "file";
+                  input.click();
 
-                      input.onchange = () => {
-                        if (input.files) {
-                          const file = input.files[0];
-                          if (
-                            file.type ==
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                          ) {
-                            InitialDataState.handleDocumentUpload(file);
-                          } else {
-                            alert("Файл должен быть в формате .xlsx или .xls");
-                          }
-                        }
-                      };
+                  input.onchange = () => {
+                    if (input.files) {
+                      const file = input.files[0];
+                      if (
+                        file.type ==
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                      ) {
+                        InitialDataState.handleDocumentUpload(file);
+                      } else {
+                        alert("Файл должен быть в формате .xlsx или .xls");
+                      }
+                    }
+                  };
                 }}
               >
                 Загрузить таблицу
