@@ -10,7 +10,7 @@ const Hud = observer(() => {
 
   return (
     <div className="fixed z-10 bottom-0 left-0 w-screen flex justify-center items-center p-5">
-      <nav className="flex flex-row gap-5 rounded-d bg-foreground/70  py-2.5 px-10 items-center">
+      <nav className="flex flex-row gap-5 rounded-d bg-foreground/30  py-2.5 px-10 items-center">
         {InitialDataState.beingEdited ? (
           <>
             <Button

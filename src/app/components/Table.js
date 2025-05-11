@@ -10,7 +10,6 @@ const Table = observer(({ tableState }) => {
   const inputRef = useRef(null);
   const [editingCell, setEditingCell] = useState(null); // { rowId, cellId }
   
-  // Автоматически фокусируем инпут при появлении
   useEffect(() => {
     if (editingCell && inputRef.current) {
       inputRef.current.focus();
@@ -28,6 +27,7 @@ const Table = observer(({ tableState }) => {
   
   const handleCellKeyDown = (e) => {
     if (e.key === "Enter") {
+      tableState.updateRowSQL(editingCell.rowId);
       setEditingCell(null);
     }
   };

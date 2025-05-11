@@ -3,8 +3,12 @@
 import Link from "next/link";
 import { observer } from "mobx-react-lite";
 import InitialDataState from "@/app/server_components/InitialDataState";
+import { Button } from "@/components/ui/button";
+import { useRouter, usePathname } from "next/navigation";
 
 const Aside = observer(() => {
+  const router = useRouter();
+  const pathname = usePathname();
   return (
     <aside className="fixed z-10 left-0 aside-width h-dvh flex box-border p-5 pr-0 text-background">
       <main className="w-full h-full flex flex-col bg-green rounded-d gap-10">
@@ -38,6 +42,16 @@ const Aside = observer(() => {
               </Link>
             </li>
           </ul>
+          {pathname !== "/" && (
+            <Button
+              className="w-max regular bg-gray"
+              variant="secondary"
+              size="lg"
+              onClick={() => router.back()}
+            >
+              <span className="regular">Вернуться</span>
+            </Button>
+          )}
         </nav>
 
         {!InitialDataState.isLoaded ? (

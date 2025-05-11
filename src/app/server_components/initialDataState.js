@@ -1,8 +1,17 @@
 "use client";
 
 import { makeAutoObservable } from "mobx";
-import { parseDocument, parseColumnNames, parseColumnTypes, createTable, insertRows } from "./database";
-import { nanoid } from 'nanoid';
+import {
+  parseDocument,
+  parseColumnNames,
+  parseColumnTypes,
+  createTable,
+  insertRows,
+  insertRow,
+  getData, 
+  clearTable,
+} from "./database";
+import { nanoid } from "nanoid";
 
 // Модель данных для колонки таблицы
 class TableColumn {
@@ -11,6 +20,7 @@ class TableColumn {
     this.name = name;
     this.sqlName = sqlName;
     this.type = type;
+    makeAutoObservable(this);
   }
 }
 
@@ -18,19 +28,19 @@ class TableColumn {
 class TableRow {
   constructor(values, editing = false) {
     this.id = nanoid();
-    this.values = values.map(v => ({ id: nanoid(), value: v }));
+    this.values = values.map((v) => ({ id: nanoid(), value: v }));
     this.editing = editing;
     makeAutoObservable(this);
   }
 
   changeValue(id, value) {
-    const index = this.values.findIndex(v => v.id === id);
+    const index = this.values.findIndex((v) => v.id === id);
     if (index !== -1) {
-      this.values[index] = {id: id, value: value};
+      this.values[index] = { id: id, value: value };
     }
   }
 
-  setEdit(state){
+  setEdit(state) {
     this.editing = state;
   }
 }
@@ -63,15 +73,18 @@ class InitialDataState {
     if (!file) return;
     try {
       this.startLoading();
-      
+
       // Парсим файл и получаем сырые данные
       const json = await parseDocument(file);
       this.jsonData = json;
-      
+
       // Инициализируем структуры данных
-      this.initializeColumns(json);
+      await this.initializeColumns(json);
       this.initializeRows(json);
-      
+
+      //Создаем таблицу в базе данных
+      await this.createTableSQL();
+
       this.finishLoading();
       console.log("Данные успешно загружены и обработаны");
     } catch (error) {
@@ -83,24 +96,29 @@ class InitialDataState {
 
   //Добавляет новую строку
   addNewRow() {
-    console.log(this.rows.length);
-    
-    this.rows = [new TableRow(this.columns.map(() => ""), true), ...this.rows];
+    this.rows = [
+      new TableRow(
+        this.columns.map(() => ""),
+        true
+      ),
+      ...this.rows,
+    ];
     this.beingEdited = true;
-    console.log(this.rows.length);
   }
 
   //Удаляет строку
   deleteRow(row) {
-    this.rows = this.rows.filter(r => r.id !== row.id);
+    this.rows = this.rows.filter((r) => r.id !== row.id);
+    this.updateTableSQL();
   }
 
   //Изменить статус редактирования
   stopEdit(cancel = false) {
     if (cancel) {
-      this.rows = this.rows.filter(r => !r.editing);
+      this.rows = this.rows.filter((r) => !r.editing);
     } else {
-      this.rows.forEach(r => r.editing = false);
+      insertRow(this.rows.filter((r) => r.editing)[0].values.map((v) => v.value), this.columns.map((c) => c.sqlName));
+      this.rows.forEach((r) => (r.editing = false));
     }
 
     this.beingEdited = false;
@@ -109,46 +127,56 @@ class InitialDataState {
   // Создает таблицу в базе данных
   async createTableSQL() {
     await createTable(this.sqlColumnNames, this.columnTypes);
-    await insertRows(this.rows.map(row => row.values), this.sqlColumnNames);
+    await insertRows(this.rowValues, this.sqlColumnNames);
+  }
+
+  //Обновить таблицу в базе данных
+  async updateTableSQL() {
+    await clearTable();
+    insertRows(this.rowValues, this.sqlColumnNames);
+  }
+
+  //Обновить строку в базе данных
+  async updateRowSQL(rowId) {
+    const row = this.rows.find((r) => r.id === rowId);
+    if (!row.editing) {
+      await clearTable();
+      insertRow(row.values.map((v) => v.value), this.sqlColumnNames);
+      console.log("Row updated");
+    }
+  }
+
+  //Геттеры для удобства
+  get sqlColumnNames() {
+    return this.columns.map((col) => col.sqlName);
+  }
+
+  get columnTypes() {
+    return this.columns.map((col) => col.type);
+  }
+
+  get rowValues() {
+    return this.rows.map((row) => row.values.map((v) => v.value));
   }
 
   // Вспомогательные методы
-  initializeColumns(json) {
+  async initializeColumns(json) {
     if (!json.length) return;
-    
+
     const columnNames = Object.keys(json[0]);
-    const sqlNames = parseColumnNames(columnNames);
-    const columnTypes = parseColumnTypes(Object.values(json[0]));
-    
-    this.columns = columnNames.map((name, index) => 
-      new TableColumn(name, sqlNames[index], columnTypes[index], columnTypes[index])
-    );
+    const sqlNames = await parseColumnNames(columnNames);
+    const columnTypes = await parseColumnTypes(Object.values(json[0]));
+
+    let res = [];
+    for (let i = 0; i < columnNames.length; i++) {
+      res.push(new TableColumn(columnNames[i], sqlNames[i], columnTypes[i]));
+    }
+
+    this.columns = res;
   }
 
   initializeRows(json) {
-    this.rows = json.map(row => 
-      new TableRow(Object.values(row))
-    );
-  }
-
-  // Геттеры для удобного доступа к данным
-  get columnNames() {
-    if (!this.rows.length || !this.columns.length) return [];
-    return this.columns.map(col => col.name);
-  }
-  
-  get sqlColumnNames() {
-    if (!this.rows.length || !this.columns.length) return [];
-    return this.columns.map(col => col.sqlName);
-  }
-  
-  get columnTypes() {
-    if (!this.rows.length || !this.columns.length) return [];
-    return this.columns.map(col => col.type);
-  }
-  
-  get hasData() {
-    return this.rows.length > 0 && this.columns.length > 0;
+    this.rows = json.map((row) => new TableRow(Object.values(row)));
   }
 }
 

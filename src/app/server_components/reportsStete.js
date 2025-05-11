@@ -15,12 +15,27 @@ class TableColumn {
 }
 
 //Модель данных для строки таблицы
+// Модель данных для строки таблицы
 class TableRow {
-  constructor(values) {
+  constructor(values, editing = false) {
     this.id = nanoid();
-    this.values = values;
+    this.values = values.map(v => ({ id: nanoid(), value: v }));
+    this.editing = editing;
+    makeAutoObservable(this);
+  }
+
+  changeValue(id, value) {
+    const index = this.values.findIndex(v => v.id === id);
+    if (index !== -1) {
+      this.values[index] = {id: id, value: value};
+    }
+  }
+
+  setEdit(state){
+    this.editing = state;
   }
 }
+
 
 //Модель данных для отчета
 class Report {

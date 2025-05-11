@@ -42,22 +42,29 @@ const translitDict = {
 
 const db = new Database("database.db");
 
-export async function transliterate(text) {
+function transliterate(text) {
   let result = "";
   for (let i = 0; i < text.length; i++) {
     if (translitDict[text.toLowerCase()[i]]) {
       result += translitDict[text.toLowerCase()[i]];
+    } else {
+      if (text[i] >= '0' && text[i] <= '9') {
+        result += text[i];
+      }
     }
   }
   return result;
 }
 
 export async function parseColumnNames(cirilicColumnNames) {
-  let result = [];
-  for (let i = 0; i < cirilicColumnNames.length; i++) {
-    result.push(transliterate(cirilicColumnNames[i]));
-  }
-  return result;
+  return Promise.resolve()
+    .then(() => {
+      let result = [];
+      for (let i = 0; i < cirilicColumnNames.length; i++) {
+        result.push(transliterate(cirilicColumnNames[i]));
+      }
+      return result;
+    });
 }
 
 export async function parseColumnTypes(columnValues) {
@@ -93,19 +100,23 @@ export async function parseDocument(document) {
         result[result.length - 1][key] = row[key];
       }
     }
-    createTable(parseColumnNames(Object.keys(result[0])), parseColumnTypes(Object.values(result[0])));
     return result;
   }
 }
 
 export async function createTable(columnNames, columnTypes) {
-  const sql = `DROP TABLE IF EXISTS data; CREATE TABLE data (id INTEGER PRIMARY KEY AUTOINCREMENT, ${columnNames
+  db.prepare('DROP TABLE IF EXISTS data;').run();
+  const sql = `CREATE TABLE data (id INTEGER PRIMARY KEY AUTOINCREMENT, ${columnNames
     .map((name, index) => `${name} ${columnTypes[index]}`)
     .join(", ")})`;
-  db.exec(sql);
+  db.prepare(sql).run();
 }
 
-async function insertRow(row, columnNames) {
+export async function clearTable() {
+  db.prepare('DELETE FROM data;').run();
+}
+
+export async function insertRow(row, columnNames) {
   const sql = `INSERT INTO data ( ${columnNames.join(", ")} ) VALUES ( ${row
     .map(() => "?")
     .join(", ")} )`;
@@ -113,15 +124,14 @@ async function insertRow(row, columnNames) {
 }
 
 export async function insertRows(rows, columnNames) {
-  const sql = `INSERT INTO data ( ${columnNames.join(", ")} ) VALUES ( ${columnNames.map((name) => "?").join(", ")} )`
+  const sql = `INSERT INTO data ( ${columnNames.join(", ")} ) VALUES ( ${columnNames.map((_name) => "?").join(", ")} )`
   const insert = db.prepare(sql);
-  const insertMany = db.transaction((rows_) => {
-    for (let row of rows_) {
+  const insertMany = db.transaction((rows) => {
+    for (let row of rows) {
       insert.run(row);
     }
   });
   insertMany(rows);
-  return "ok";
 }
 
 export async function getData() {

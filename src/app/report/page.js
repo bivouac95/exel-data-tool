@@ -97,7 +97,7 @@ const Report = observer(() => {
           <p className="regular">Создать новый отчет, на самом деле, очень просто!</p>
         </div>
         
-        <div className="grid grid-cols-3 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           <div className="flex flex-col gap-5 w-full">
             <img src="/digit_1.png" alt="" />
             <p className="regular">Дайте название отчету</p>
