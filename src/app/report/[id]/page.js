@@ -2,30 +2,35 @@
 
 import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
+import { getViews } from "@/app/server_components/database"
+
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Report = observer(() => {
+  useEffect(() => {
+    const getView = async () => {
+      const views = await getViews();
+      console.log(views);
+    };
+
+    getView();
+  }, []);
+  
   return (
     <div className="col-start-2 md:col-start-3 lg:col-start-3 col-span-3 md:col-span-4 lg:col-span-5 flex flex-col gap-10">
       <div className="flex flex-col gap-5">
         <h2>Отчет</h2>
-
         <div className="flex flex-col gap-2.5">
+          
           <Dialog>
             <DialogTrigger asChild>
               <Button
@@ -49,6 +54,7 @@ const Report = observer(() => {
                   <span className="regular">Добавить колонку</span>
                 </Button>
               </div>
+              
               <div className="flex flex-col gap-5">
                 <h2>SQL выражение</h2>
                 <p className="regular">
@@ -81,6 +87,7 @@ const Report = observer(() => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+
           <input type="text" className="regular bg-gray w-full h-10 px-5 flex gap-4 rounded-d" placeholder="Название отчета" />
           <Button
             className="regular bg-gray w-max px-5 flex gap-4"

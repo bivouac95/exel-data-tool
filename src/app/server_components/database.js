@@ -42,6 +42,7 @@ const translitDict = {
 
 const db = new Database("database.db");
 
+// Функция транслитерации
 function transliterate(text) {
   let result = "";
   for (let i = 0; i < text.length; i++) {
@@ -56,6 +57,7 @@ function transliterate(text) {
   return result;
 }
 
+// Парсит названия столбцов
 export async function parseColumnNames(cirilicColumnNames) {
   return Promise.resolve()
     .then(() => {
@@ -67,6 +69,7 @@ export async function parseColumnNames(cirilicColumnNames) {
     });
 }
 
+// Парсит типы столбцов
 export async function parseColumnTypes(columnValues) {
   let columnTypes = [];
   for (let value of columnValues) {
@@ -82,6 +85,7 @@ export async function parseColumnTypes(columnValues) {
   return columnTypes;
 }
 
+// Парсит файл XLSX
 export async function parseDocument(document) {
   if (
     document.type ==
@@ -104,6 +108,7 @@ export async function parseDocument(document) {
   }
 }
 
+// Создает таблицу
 export async function createTable(columnNames, columnTypes) {
   db.prepare('DROP TABLE IF EXISTS data;').run();
   const sql = `CREATE TABLE data (id INTEGER PRIMARY KEY AUTOINCREMENT, ${columnNames
@@ -112,10 +117,12 @@ export async function createTable(columnNames, columnTypes) {
   db.prepare(sql).run();
 }
 
+// Удаляет все строки из таблицы
 export async function clearTable() {
   db.prepare('DELETE FROM data;').run();
 }
 
+// Добавляет строку
 export async function insertRow(row, columnNames) {
   const sql = `INSERT INTO data ( ${columnNames.join(", ")} ) VALUES ( ${row
     .map(() => "?")
@@ -123,6 +130,7 @@ export async function insertRow(row, columnNames) {
   db.prepare(sql).run(row);
 }
 
+// Добавляет строки
 export async function insertRows(rows, columnNames) {
   const sql = `INSERT INTO data ( ${columnNames.join(", ")} ) VALUES ( ${columnNames.map((_name) => "?").join(", ")} )`
   const insert = db.prepare(sql);
@@ -134,12 +142,20 @@ export async function insertRows(rows, columnNames) {
   insertMany(rows);
 }
 
+// Получает все строки из таблицы
 export async function getData() {
   const sql = `SELECT * FROM data`;
   return db.prepare(sql).all();
 }
 
+// Выполняет запрос
 export async function executeQuery(query) {
   const sql = `SELECT * FROM data WHERE ${query}`;
+  return db.prepare(sql).all();
+}
+
+// Получает Views
+export async function getViews() {
+  const sql = `SELECT * FROM sqlite_master WHERE type='view'`;
   return db.prepare(sql).all();
 }

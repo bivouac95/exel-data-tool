@@ -24,7 +24,6 @@ const Search = observer(() => {
     <div className="col-start-2 md:col-start-3 lg:col-start-3 col-span-4 lg:col-span-5 flex flex-col gap-10">
       <div className="flex flex-col gap-5">
         <h2>Поиск</h2>
-
         <div className="flex flex-col gap-2.5">
           <Dialog>
             <DialogTrigger asChild>
