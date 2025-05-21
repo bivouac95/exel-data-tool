@@ -8,7 +8,7 @@ import {
   createTable,
   insertRows,
   insertRow,
-  getData, 
+  getData,
   clearTable,
 } from "./database";
 import { nanoid } from "nanoid";
@@ -117,7 +117,10 @@ class InitialDataState {
     if (cancel) {
       this.rows = this.rows.filter((r) => !r.editing);
     } else {
-      insertRow(this.rows.filter((r) => r.editing)[0].values.map((v) => v.value), this.columns.map((c) => c.sqlName));
+      insertRow(
+        this.rows.filter((r) => r.editing)[0].values.map((v) => v.value),
+        this.columns.map((c) => c.sqlName)
+      );
       this.rows.forEach((r) => (r.editing = false));
     }
 
@@ -141,7 +144,10 @@ class InitialDataState {
     const row = this.rows.find((r) => r.id === rowId);
     if (!row.editing) {
       await clearTable();
-      insertRow(row.values.map((v) => v.value), this.sqlColumnNames);
+      insertRow(
+        row.values.map((v) => v.value),
+        this.sqlColumnNames
+      );
       console.log("Row updated");
     }
   }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { observer } from "mobx-react-lite";
-import InitialDataState from "@/app/server_components/InitialDataState";
+import InitialDataState from "@/server_components/InitialDataState";
 import { Button } from "@/components/ui/button";
 import { useRouter, usePathname } from "next/navigation";
 

@@ -2,7 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
-import InitialDataState from "../server_components/InitialDataState";
+import InitialDataState from "../../server_components/InitialDataState";
 import { useRouter } from "next/navigation";
 
 const Hud = observer(() => {

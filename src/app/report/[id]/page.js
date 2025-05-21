@@ -2,7 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
-import { getViews } from "@/app/server_components/database"
+import { getViews } from "@/server_components/database";
 
 import {
   Dialog,
@@ -24,13 +24,12 @@ const Report = observer(() => {
 
     getView();
   }, []);
-  
+
   return (
     <div className="col-start-2 md:col-start-3 lg:col-start-3 col-span-3 md:col-span-4 lg:col-span-5 flex flex-col gap-10">
       <div className="flex flex-col gap-5">
         <h2>Отчет</h2>
         <div className="flex flex-col gap-2.5">
-          
           <Dialog>
             <DialogTrigger asChild>
               <Button
@@ -47,18 +46,24 @@ const Report = observer(() => {
               <div className="flex flex-col gap-5">
                 <h2>Колонки</h2>
                 <p className="regular">
-                Добавьте необходимые вам колонки, выберите им имена и типы данных
+                  Добавьте необходимые вам колонки, выберите им имена и типы
+                  данных
                 </p>
-                <Button variant="secondary" className="w-full flex gap-5" size="lg">
+                <Button
+                  variant="secondary"
+                  className="w-full flex gap-5"
+                  size="lg"
+                >
                   <img src="/plus.svg" alt="Добавить" />
                   <span className="regular">Добавить колонку</span>
                 </Button>
               </div>
-              
+
               <div className="flex flex-col gap-5">
                 <h2>SQL выражение</h2>
                 <p className="regular">
-                    Введите SQL запрос для формирования нового отчета, ориентируясь на подсказки
+                  Введите SQL запрос для формирования нового отчета,
+                  ориентируясь на подсказки
                 </p>
                 <textarea
                   className="regular bg-gray w-full h-30 p-5 resize-none rounded-d"
@@ -88,7 +93,11 @@ const Report = observer(() => {
             </DialogContent>
           </Dialog>
 
-          <input type="text" className="regular bg-gray w-full h-10 px-5 flex gap-4 rounded-d" placeholder="Название отчета" />
+          <input
+            type="text"
+            className="regular bg-gray w-full h-10 px-5 flex gap-4 rounded-d"
+            placeholder="Название отчета"
+          />
           <Button
             className="regular bg-gray w-max px-5 flex gap-4"
             size="lg"
@@ -98,12 +107,14 @@ const Report = observer(() => {
             <span className="regular">Выполнить</span>
           </Button>
         </div>
-        
+
         <div className="flex flex-col gap-5">
           <h2>Тут ничего нет</h2>
-          <p className="regular">Создать новый отчет, на самом деле, очень просто!</p>
+          <p className="regular">
+            Создать новый отчет, на самом деле, очень просто!
+          </p>
         </div>
-        
+
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           <div className="flex flex-col gap-5 w-full">
             <img src="/digit_1.png" alt="" />
@@ -112,14 +123,15 @@ const Report = observer(() => {
           <div className="flex flex-col gap-5 w-full">
             <img src="/digit_2.png" alt="" />
             <p className="regular">
-              Откройте <b>Параметры отчета</b> и добавьте колонки, из которых состоит
-              отчет. Дайте им названия и укажите их типы данных
+              Откройте <b>Параметры отчета</b> и добавьте колонки, из которых
+              состоит отчет. Дайте им названия и укажите их типы данных
             </p>
           </div>
           <div className="flex flex-col gap-5 w-full">
             <img src="/digit_3.png" alt="" />
             <p className="regular">
-              Напишите <b>SQL запрос</b>, с помощью которого будет формироваться отчет
+              Напишите <b>SQL запрос</b>, с помощью которого будет формироваться
+              отчет
             </p>
           </div>
           <div className="flex flex-col gap-5 w-full">

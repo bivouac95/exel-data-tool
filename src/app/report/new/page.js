@@ -2,7 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
-import { getViews } from "@/app/server_components/database";
+import { getViews } from "@/server_components/database";
 import {
   Dialog,
   DialogContent,
@@ -12,12 +12,14 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
-import { executeQuery } from "@/app/server_components/database";
+import { executeQuery } from "@/server_components/database";
 
 const Report = observer(() => {
   // Состояния для формы
   const [reportName, setReportName] = useState("");
-  const [sqlQuery, setSqlQuery] = useState("CREATE VIEW [reportName] AS SELECT * FROM data");
+  const [sqlQuery, setSqlQuery] = useState(
+    "CREATE VIEW [reportName] AS SELECT * FROM data"
+  );
   const [columns, setColumns] = useState([]);
   const [newColumn, setNewColumn] = useState({ name: "", type: "TEXT" });
 

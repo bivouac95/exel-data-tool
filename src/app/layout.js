@@ -1,5 +1,5 @@
 import "./globals.css";
-import Aside from "@/app/components/Aside";
+import Aside from "@/components/ui/Aside";
 
 export const metadata = {
   title: "Forest Panel | bivouac95",
