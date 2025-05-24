@@ -49,7 +49,7 @@ function transliterate(text) {
     if (translitDict[text.toLowerCase()[i]]) {
       result += translitDict[text.toLowerCase()[i]];
     } else {
-      if (text[i] >= '0' && text[i] <= '9') {
+      if (text[i] >= "0" && text[i] <= "9") {
         result += text[i];
       }
     }
@@ -59,14 +59,13 @@ function transliterate(text) {
 
 // Парсит названия столбцов
 export async function parseColumnNames(cirilicColumnNames) {
-  return Promise.resolve()
-    .then(() => {
-      let result = [];
-      for (let i = 0; i < cirilicColumnNames.length; i++) {
-        result.push(transliterate(cirilicColumnNames[i]));
-      }
-      return result;
-    });
+  return Promise.resolve().then(() => {
+    let result = [];
+    for (let i = 0; i < cirilicColumnNames.length; i++) {
+      result.push(transliterate(cirilicColumnNames[i]));
+    }
+    return result;
+  });
 }
 
 // Парсит типы столбцов
@@ -96,7 +95,7 @@ export async function parseDocument(document) {
     const wb = xlsx.read(buffer);
     const ws = wb.Sheets[wb.SheetNames[0]];
     const data = xlsx.utils.sheet_to_json(ws);
-    
+
     let result = [];
     for (let row of data) {
       result.push({});
@@ -110,8 +109,8 @@ export async function parseDocument(document) {
 
 // Создает таблицу
 export async function createTable(columnNames, columnTypes) {
-  db.prepare('DROP TABLE IF EXISTS data;').run();
-  const sql = `CREATE TABLE data (id INTEGER PRIMARY KEY AUTOINCREMENT, ${columnNames
+  db.prepare("DROP TABLE IF EXISTS data;").run();
+  const sql = `CREATE TABLE data (id TEXT PRIMARY KEY, ${columnNames
     .map((name, index) => `${name} ${columnTypes[index]}`)
     .join(", ")})`;
   db.prepare(sql).run();
@@ -119,7 +118,7 @@ export async function createTable(columnNames, columnTypes) {
 
 // Удаляет все строки из таблицы
 export async function clearTable() {
-  db.prepare('DELETE FROM data;').run();
+  db.prepare("DELETE FROM data;").run();
 }
 
 // Добавляет строку
@@ -130,9 +129,23 @@ export async function insertRow(row, columnNames) {
   db.prepare(sql).run(row);
 }
 
+// Удаляет строку
+export async function deleteRow(id) {
+  db.prepare("DELETE FROM data WHERE id = ?").run(id);
+}
+
+// Обновляет строку
+export async function updateRow(rowId, row, columnNames) {
+  const sql = `UPDATE data SET ${columnNames
+    .map((name, index) => `${name} = ?`)
+    .join(", ")} WHERE id = ?`;
+  db.prepare(sql).run(row, rowId);
+}
 // Добавляет строки
 export async function insertRows(rows, columnNames) {
-  const sql = `INSERT INTO data ( ${columnNames.join(", ")} ) VALUES ( ${columnNames.map((_name) => "?").join(", ")} )`
+  const sql = `INSERT INTO data ( ${columnNames.join(
+    ", "
+  )} ) VALUES ( ${columnNames.map((_name) => "?").join(", ")} )`;
   const insert = db.prepare(sql);
   const insertMany = db.transaction((rows) => {
     for (let row of rows) {

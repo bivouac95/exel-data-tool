@@ -38,12 +38,11 @@ const Table = observer(({ tableState }) => {
 
     const sanitizedValue = sanitizeInput(inputValue);
     if (!isValidInput(sanitizedValue)) return;
-
     // Валидация по типу столбца
     const { rowId, cellId } = editingCell;
     const row = rows.get(rowId);
     const cellIndex = row.values.findIndex((v) => v.id === cellId);
-    const columnType = columns[cellIndex].type; // TEXT или INTEGER
+    const columnType = columns[cellIndex].type;
     const columnName = columns[cellIndex].name;
 
     if (columnType === "INTEGER" && !/^[-+]?\d+$/.test(sanitizedValue)) {
@@ -56,6 +55,7 @@ const Table = observer(({ tableState }) => {
     // Общий код для обоих случаев
     handleCellChange(rowId, cellId, sanitizedValue);
     tableState.updateRowSQL(rowId);
+    tableState.getSQLData();
     setEditingCell(null);
   };
 
