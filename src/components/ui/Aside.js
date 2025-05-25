@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import InitialDataState from "@/server_components/InitialDataState";
 import { Button } from "@/components/ui/button";
 import { useRouter, usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 const Aside = observer(() => {
   const router = useRouter();
@@ -75,7 +76,7 @@ const Aside = observer(() => {
                         ) {
                           InitialDataState.handleDocumentUpload(file);
                         } else {
-                          alert("Файл должен быть в формате .xlsx или .xls");
+                          toast("Файл должен быть в формате .xlsx или .xls");
                         }
                       }
                     };
@@ -92,7 +93,26 @@ const Aside = observer(() => {
             </ul>
           </div>
         ) : (
-          <></>
+          <div className="flex flex-col gap-5 mx-5">
+            <h2>Навигация</h2>
+            <ul className="flex flex-col gap-2.5">
+              <li>
+                <Link href="/manage" className="regular">
+                  Менеджер таблиц
+                </Link>
+              </li>
+              <li>
+                <Link href="/report/new" className="regular">
+                  Создать новый отчет
+                </Link>
+              </li>
+              <li>
+                <Link href="/search/new" className="regular">
+                  Поиск
+                </Link>
+              </li>
+            </ul>
+          </div>
         )}
       </main>
     </aside>

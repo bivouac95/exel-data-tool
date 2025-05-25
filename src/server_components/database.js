@@ -107,13 +107,57 @@ export async function parseDocument(document) {
   }
 }
 
+// Полностью очищает базу данных
+export async function clearDatabase() {
+  // Очистить все таблицы и удалить все представления (view)
+  const tables = db
+    .prepare(
+      `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';`
+    )
+    .all();
+  const views = db
+    .prepare(`SELECT name FROM sqlite_master WHERE type='view';`)
+    .all();
+
+  for (const { name } of tables) {
+    db.prepare(`DROP TABLE IF EXISTS "${name}"`).run();
+  }
+  for (const { name } of views) {
+    db.prepare(`DROP VIEW IF EXISTS "${name}"`).run();
+  }
+}
+
 // Создает таблицу
 export async function createTable(columnNames, columnTypes) {
-  db.prepare("DROP TABLE IF EXISTS data;").run();
-  const sql = `CREATE TABLE data (id TEXT PRIMARY KEY, ${columnNames
-    .map((name, index) => `${name} ${columnTypes[index]}`)
-    .join(", ")})`;
-  db.prepare(sql).run();
+  // Очистить дб
+  await clearDatabase();
+
+  // Добавляем поддержку REGEXP
+  db.function("REGEXP", (pattern, value) => {
+    try {
+      if (typeof value !== "string") return 0; // SQLite может передать number
+      const regex = new RegExp(pattern);
+      return regex.test(value) ? 1 : 0;
+    } catch (err) {
+      return 0; // Ошибочный regex — считаем, что нет совпадения
+    }
+  });
+
+  const columns = columnNames
+    .map((name, i) => `"${name}" ${columnTypes[i]}`)
+    .join(", ");
+  const createDataSQL = `CREATE TABLE "data" (
+    id TEXT PRIMARY KEY${columns ? ", " + columns : ""}
+  )`;
+  db.prepare(createDataSQL).run();
+
+  const createTablesSQL = `CREATE TABLE "tables" (
+    id TEXT PRIMARY KEY,
+    type TEXT,
+    name TEXT,
+    sqlQuery TEXT
+  )`;
+  db.prepare(createTablesSQL).run();
 }
 
 // Удаляет все строки из таблицы
@@ -167,8 +211,30 @@ export async function executeQuery(query) {
   return db.prepare(sql).all();
 }
 
-// Получает Views
-export async function getViews() {
-  const sql = `SELECT * FROM sqlite_master WHERE type='view'`;
+// Создать поисковой запрос
+export async function createSearchQuery(query, table, id, name) {
+  const createView = `CREATE VIEW ${name} AS SELECT * FROM ${table} WHERE ${query}`;
+  db.prepare(createView).run();
+  const createRecord = `INSERT INTO tables (id, type, name, sqlQuery) VALUES (?, ?, ?, ?)`;
+  db.prepare(createRecord).run(id, "search", name, createView);
+}
+
+// Получить данные запроса
+export async function getReportData(name) {
+  const sql = `SELECT * FROM ${name}`;
   return db.prepare(sql).all();
+}
+
+// Получить таблицы
+export async function getTables() {
+  const sql = `SELECT * FROM tables`;
+  return db.prepare(sql).all();
+}
+
+// Получить колонки таблицы по имени таблицы
+export async function getColumns(tableName) {
+  const sql = `SELECT * FROM ${tableName}`;
+  const data = db.prepare(sql).all();
+  if (data.length == 0) return [];
+  else return Object.keys(data[0]);
 }

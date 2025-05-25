@@ -97,6 +97,10 @@
   .aside-width {
     width: calc(var(--col-width) + (100vw - (var(--col-amount) * var(--col-width) + (var(--col-amount) - 1) * 20px)) / 2);
   }
+
+  .col-left-gap {
+    margin-left: calc(var(--col-width) + 20px);
+  }
 }
 
 h1 {

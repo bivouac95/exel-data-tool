@@ -48,20 +48,8 @@ const Hud = observer(() => {
           variant="secondary"
           className="w-10 h-10 justify-center items-center"
           size="icon"
-          onClick={() => router.push("/report")}
         >
-          <img src="/report.svg" alt="Отчет" />
-        </Button>
-
-        <div className="w-[1px] h-8 border-l-[2px] border-background" />
-
-        <Button
-          variant="secondary"
-          className="w-10 h-10 justify-center items-center"
-          size="icon"
-          onClick={() => router.push("/report/new")}
-        >
-          <img src="/search.svg" alt="Поиск" />
+          <img src="/trash.svg" alt="Удалить" />
         </Button>
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
