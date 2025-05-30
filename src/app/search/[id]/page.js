@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import SearchState from "@/server_components/SearchState";
 import { useParams } from "next/navigation";
 import Table from "@/components/ui/TableGraphics";
+import { toast } from "sonner";
 
 const Search = observer(() => {
   const searchId = useParams().id;
@@ -19,18 +20,22 @@ const Search = observer(() => {
     setSearchResultTable(table.tableState);
   }, []);
 
+  const update = () => {
+    try {
+      searchQuery.updateData()
+    } catch (err) {
+      toast(err);
+    }
+  };
+
   return (
     <>
       {searchResultTable.isLoaded ? (
-        <div className="col-start-1 md:col-start-2 lg:col-start-2 col-span-5 lg:col-span-6 flex flex-col gap-10">
-          <div className={`flex flex-col gap-5 col-left-gap`}>
+        <div className="col-start-2 col-span-5 flex flex-col gap-10">
+          <div className="flex flex-col gap-5">
             <h2>Поиск</h2>
             <div className="flex flex-row gap-5 items-center">
-              <Button
-                size="lg"
-                variant="secondary"
-                onClick={searchQuery.updateData}
-              >
+              <Button size="lg" variant="secondary" onClick={update}>
                 <img src="/sync.svg" alt="Обновить" />
                 <span className="regular">Обновить</span>
               </Button>
@@ -43,7 +48,7 @@ const Search = observer(() => {
             <input
               disabled={true}
               type="text"
-              className="regular bg-gray w-full h-10 px-5 flex gap-4 rounded-d"
+              className="regular bg-gray max-w-full h-10 px-5 flex gap-4 rounded-d mr-5"
               value={searchQuery.name}
             />
           </div>

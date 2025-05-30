@@ -2,117 +2,135 @@
 
 import { makeAutoObservable } from "mobx";
 import { nanoid } from "nanoid";
-import { executeQuery } from "./database";
+import {
+  getColumns,
+  createSearchQuery,
+  getReportData,
+  parseColumnNames,
+  asyncTransliterate,
+  createReport,
+} from "./database";
 
-//Модель данных для колонки таблицы
 class TableColumn {
-  constructor(name, sqlName, type) {
+  constructor(name, sqlName) {
     this.id = nanoid();
     this.name = name;
     this.sqlName = sqlName;
-    this.type = type;
   }
 }
 
-//Модель данных для строки таблицы
-// Модель данных для строки таблицы
 class TableRow {
-  constructor(values, editing = false) {
+  constructor(values) {
     this.id = nanoid();
-    this.values = values.map(v => ({ id: nanoid(), value: v }));
-    this.editing = editing;
+    this.values = values.map((v) => ({ id: nanoid(), value: v }));
+  }
+}
+
+class TableState {
+  constructor() {
+    this.rows = new Map();
+    this.rowOrder = [];
+    this.columns = [];
+    this.isLoaded = false;
+    this.isLoading = false;
     makeAutoObservable(this);
   }
 
-  changeValue(id, value) {
-    const index = this.values.findIndex(v => v.id === id);
-    if (index !== -1) {
-      this.values[index] = {id: id, value: value};
+  // Loading state management
+  startLoading() {
+    this.isLoaded = false;
+    this.isLoading = true;
+  }
+
+  finishLoading() {
+    this.isLoading = false;
+    this.isLoaded = true;
+  }
+
+  initializeRows(data) {
+    for (let row of data) {
+      let values = Object.values(row);
+      const tableRow = new TableRow(values);
+      this.rows.set(tableRow.id, tableRow);
+      this.rowOrder.push(tableRow.id);
     }
   }
 
-  setEdit(state){
-    this.editing = state;
+  initializeColums(criteria) {
+    for (let c of criteria) {
+      this.columns.push(new TableColumn(c.name, c.sqlName));
+    }
   }
 }
 
-
-//Модель данных для отчета
 class Report {
-  constructor(name, sqlQuery) {
+  constructor(name) {
     this.id = nanoid();
     this.name = name;
-    this.sqlQuery = sqlQuery;
-    this.columns = [];
-    this.rows = [];
-    this.isLoaded = false;
-    makeAutoObservable(this);
+    this.sqlName = "";
+    this.sqlQuery = "";
+    this.tableState = new TableState();
   }
 
-  //Устанавливает состояние загрузки
-  setLoaded(state) {
-    this.isLoaded = state;
-  }
-
-  //Выполняет запрос и обновляет данные
-  async execute() {
-    this.setLoaded(false);
-    try {
-      const data = await executeQuery(this.sqlQuery);
-      this.columns = data.map(
-        (row) =>
-          new TableColumn(
-            Object.keys(row)[0],
-            Object.keys(row)[0],
-            typeof row[Object.keys(row)[0]]
-          )
-      );
-      this.rows = data.map((row) => new TableRow(Object.values(row)));
-      this.setLoaded(true);
-    } catch (error) {
-      console.error("Ошибка при выполнении запроса:", error);
-      this.setLoaded(true);
-      throw error;
+  async createSQL(criteria) {
+    const fromSet = new Set();
+    let queryList = [];
+    for (let c of criteria) {
+      if (c.table && c.table !== "") {
+        fromSet.add(c.table);
+        queryList.push(c.sqlQuery);
+      } else {
+        queryList.push("(SELECT " + c.sqlQuery + ") AS " + c.sqlName);
+      }
     }
+    const fromList = Array.from(fromSet);
+    let sql = `CREATE VIEW ${this.sqlName} AS SELECT ` + queryList.join(", ");
+    if (fromList.length > 0) {
+      sql += ` FROM ${fromList.join(", ")}`;
+    }
+    console.log(sql);
+    await createReport(sql, this.id, this.sqlName);
   }
 
-  // Геттеры для удобного доступа к данным
-  get columnNames() {
-    if (!this.rows.length || !this.columns.length) return [];
-    return this.columns.map((col) => col.name);
+  // const criteria = {
+  //   name: column.name,
+  //   table: column.tableName,
+  //   sqlName: column.sqlName,
+  //   sqlQuery: column.sqlQuery,
+  // };
+  async init(criteria) {
+    this.tableState.startLoading();
+    this.sqlName = await asyncTransliterate(this.name);
+    await this.createSQL(criteria);
+    this.tableState.initializeColums(criteria);
+    const rows = await getReportData(this.sqlName);
+    this.tableState.initializeRows(rows);
+    this.tableState.finishLoading();
+
+    return Array.from(this.tableState.rows.values());
   }
 
-  get sqlColumnNames() {
-    if (!this.rows.length || !this.columns.length) return [];
-    return this.columns.map((col) => col.sqlName);
-  }
-
-  get columnTypes() {
-    if (!this.rows.length || !this.columns.length) return [];
-    return this.columns.map((col) => col.type);
-  }
-
-  get hasData() {
-    return this.rows.length > 0 && this.columns.length > 0;
+  async updateData() {
+    this.tableState.startLoading();
+    this.tableState.rowOrder = [];
+    this.tableState.rows.clear();
+    this.tableState.initializeRows(await getReportData(this.sqlName));
+    this.tableState.finishLoading();
   }
 }
 
-//Состояние отчетов
-class ReportsState {
+class ReportsStete {
   constructor() {
     this.reports = [];
     makeAutoObservable(this);
   }
 
-  //Добавляет новый отчет
-  addReport(name, sqlQuery) {
-    this.reports.push(new Report(name, sqlQuery));
-  }
-
-  //Геттеры для удобного доступа к отчетам
-  get reportNames() {
-    return this.reports.map((report) => report.name);
+  async addReport(name, criteria) {
+    const report = new Report(name);
+    await report.init(criteria);
+    this.reports.push(report);
+    return report;
   }
 }
 
-export default new ReportsState();
+export default new ReportsStete();

@@ -1,4 +1,3 @@
-// SearchFormDialog.js
 "use client";
 
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -88,8 +87,6 @@ const SearchFormDialog = ({ onSubmit }) => {
           className="flex flex-col gap-10"
         >
           <DialogTitle className="hidden">Параметры поиска</DialogTitle>
-
-          {/* Выбор таблицы */}
           <div className="flex flex-col gap-5">
             <h2>Таблица</h2>
             <p className="regular">

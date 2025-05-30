@@ -40,18 +40,63 @@ const translitDict = {
   я: "ya",
 };
 
+const latin = [
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k",
+  "l",
+  "m",
+  "n",
+  "o",
+  "p",
+  "q",
+  "r",
+  "s",
+  "t",
+  "u",
+  "v",
+  "w",
+  "x",
+  "y",
+  "z",
+];
+
 const db = new Database("database.db");
 
 // Функция транслитерации
 function transliterate(text) {
   let result = "";
   for (let i = 0; i < text.length; i++) {
-    if (translitDict[text.toLowerCase()[i]]) {
-      result += translitDict[text.toLowerCase()[i]];
-    } else {
-      if (text[i] >= "0" && text[i] <= "9") {
-        result += text[i];
-      }
+    const lowerChar = text.toLowerCase()[i];
+    if (translitDict[lowerChar]) {
+      result += translitDict[lowerChar];
+    } else if (latin.includes(text[i])) {
+      result += text[i];
+    } else if (text[i] >= "0" && text[i] <= "9") {
+      result += text[i];
+    }
+  }
+  return result;
+}
+
+export async function asyncTransliterate(text) {
+  let result = "";
+  for (let i = 0; i < text.length; i++) {
+    const lowerChar = text.toLowerCase()[i];
+    if (translitDict[lowerChar]) {
+      result += translitDict[lowerChar];
+    } else if (latin.includes(text[i])) {
+      result += text[i];
+    } else if (text[i] >= "0" && text[i] <= "9") {
+      result += text[i];
     }
   }
   return result;
@@ -77,7 +122,7 @@ export async function parseColumnTypes(columnValues) {
         columnTypes.push("TEXT");
         break;
       case "number":
-        columnTypes.push("INTEGER");
+        columnTypes.push("REAL");
         break;
     }
   }
@@ -217,6 +262,13 @@ export async function createSearchQuery(query, table, id, name) {
   db.prepare(createView).run();
   const createRecord = `INSERT INTO tables (id, type, name, sqlQuery) VALUES (?, ?, ?, ?)`;
   db.prepare(createRecord).run(id, "search", name, createView);
+}
+
+// Создает отчет
+export async function createReport(query, id, name) {
+  db.prepare(query).run();
+  const createRecord = `INSERT INTO tables (id, type, name, sqlQuery) VALUES (?, ?, ?, ?)`;
+  db.prepare(createRecord).run(id, "report", name, query);
 }
 
 // Получить данные запроса

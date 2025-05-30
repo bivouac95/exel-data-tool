@@ -45,9 +45,9 @@ const Table = observer(({ tableState }) => {
     const columnType = columns[cellIndex].type;
     const columnName = columns[cellIndex].name;
 
-    if (columnType === "INTEGER" && !/^[-+]?\d+$/.test(sanitizedValue)) {
+    if (columnType === "REAL" && !/^[-+]?\d+(\.\d+)?$/.test(sanitizedValue)) {
       toast(
-        `Значение ячейки ${columnName} должно быть целым числом, получено: "${sanitizedValue}"`
+        `Значение ячейки ${columnName} должно быть числом с плавающей точкой, получено: "${sanitizedValue}"`
       );
       return;
     }
@@ -55,7 +55,6 @@ const Table = observer(({ tableState }) => {
     // Общий код для обоих случаев
     handleCellChange(rowId, cellId, sanitizedValue);
     tableState.updateRowSQL(rowId);
-    tableState.getSQLData();
     setEditingCell(null);
   };
 

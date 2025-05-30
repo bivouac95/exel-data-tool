@@ -79,18 +79,20 @@ class SearchQuery {
   }
 
   async createSQL() {
-    const cols = this.columns.map((col) => col.sqlName);
     const key = this.searchKey.replace(/'/g, "''");
 
-    const predicates = cols.map((col) => {
+    const predicates = this.columns.map((col) => {
+      const casted = `CAST(${col} AS TEXT)`; // или AS CHAR
       if (this.regex) {
-        return `${col} REGEXP '${key}'`;
+        return `${casted} REGEXP '${key}'`;
       } else {
-        return `${col} LIKE '%${key}%'`;
+        return `${casted} LIKE '%${key}%'`;
       }
     });
 
     const query = predicates.join(" OR ");
+    console.log("Generated SQL WHERE:", query); // для дебага
+
     await createSearchQuery(query, this.tableName, this.id, this.sqlName);
   }
 
@@ -98,15 +100,16 @@ class SearchQuery {
     this.tableState.startLoading();
     await this.createSQL();
     this.tableState.initializeColums(columns);
-    const rows = await getReportData(this.tableName);
+    const rows = await getReportData(this.sqlName);
     this.tableState.initializeRows(rows);
     this.tableState.finishLoading();
   }
 
   async updateData() {
     this.tableState.startLoading();
+    this.tableState.rowOrder = [];
     this.tableState.rows.clear();
-    this.tableState.initializeRows(await getReportData(this.tableName));
+    this.tableState.initializeRows(await getReportData(this.sqlName));
     this.tableState.finishLoading();
   }
 }

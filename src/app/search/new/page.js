@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { getTables } from "@/server_components/database";
 import SearchState from "@/server_components/SearchState";
+import ReportsStete from "@/server_components/ReportsStete";
 import InitialDataState from "@/server_components/InitialDataState";
 import { Grid } from "react-loader-spinner";
 
@@ -28,17 +29,16 @@ const Search = observer(() => {
   const onSearch = async () => {
     setIsLoaded(false);
     let columns = [];
-    console.log(searchCreteria);
 
     if (searchCreteria.tableName == "data") {
       columns = InitialDataState.columns;
     } else {
       const tables = await getTables();
-      const table = tables.find((table) => table.name == criteria.tableName);
+      const table = tables.find((table) => table.name == searchCreteria.tableName);
 
       switch (table.type) {
         case "search":
-          columns = SearchState.searchQueries.get(table.id).columns;
+          columns = SearchState.searchQueries.get(table.id).tableState.columns;
           break;
         case "report":
           // columns = SearchState.searchQueries.get(table.id).columns
@@ -52,7 +52,7 @@ const Search = observer(() => {
       searchCreteria,
       columns
     );
-    setIsLoaded(true);
+    console.log(newQuery);
     router.push(`/search/${newQuery.id}`);
   };
 
