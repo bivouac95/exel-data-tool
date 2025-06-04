@@ -38,7 +38,7 @@ export default function PressetsForm({ setString }) {
         return SearchState.searchQueries.get(table.id).tableState.columns;
         break;
       case "report":
-        return [];
+        return ReportsStete.reports.find((t) => t.id == table.id).tableState.columns;
         break;
     }
   }

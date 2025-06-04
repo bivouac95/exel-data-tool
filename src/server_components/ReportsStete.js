@@ -9,6 +9,7 @@ import {
   parseColumnNames,
   asyncTransliterate,
   createReport,
+  deleteTable,
 } from "./database";
 
 class TableColumn {
@@ -60,6 +61,21 @@ class TableState {
     for (let c of criteria) {
       this.columns.push(new TableColumn(c.name, c.sqlName));
     }
+  }
+
+  get jsonData() {
+    const objectKeys = this.columns.map((c) => c.name);
+    let result = [];
+    for (let id of this.rowOrder) {
+      const row = this.rows.get(id);
+      const values = row.values.map((v) => v.value);
+      let obj = {};
+      for (let i = 0; i < objectKeys.length; i++) {
+        obj[objectKeys[i]] = values[i];
+      }
+      result.push(obj);
+    }
+    return result;
   }
 }
 
@@ -130,6 +146,12 @@ class ReportsStete {
     await report.init(criteria);
     this.reports.push(report);
     return report;
+  }
+
+  async deleteReport(id) {
+    const report = this.reports.find((r) => r.id === id);
+    deleteTable(report.sqlName);
+    this.reports = this.reports.filter((r) => r.id !== id);
   }
 }
 

@@ -61,8 +61,7 @@ class FormColumn {
     this.columnName = name;
     this.sqlName = name;
     this.name = this.tableColumns.find((c) => c.sqlName == name).name;
-    if (this.formationMethod == "table")
-      this.sqlQuery = `${name}`;
+    if (this.formationMethod == "table") this.sqlQuery = `${name}`;
   }
 
   async getTableColumns() {
@@ -75,7 +74,8 @@ class FormColumn {
         return SearchState.searchQueries.get(table.id).tableState.columns;
         break;
       case "report":
-        return [];
+        return ReportsStete.reports.find((t) => t.id == table.id).tableState
+          .columns;
         break;
     }
   }
@@ -102,6 +102,7 @@ class FormColumns {
 
   deleteColumn(id) {
     this.columns.delete(id);
+    this.columnsOrder = this.columnsOrder.filter((colId) => colId !== id);
   }
 
   async handleSubmit() {
@@ -118,6 +119,22 @@ class FormColumns {
     }
     const report = await ReportsStete.addReport(this.reportName, res);
     return report;
+  }
+
+  get isDisabled() {
+    if (!this.reportName.trim()) return true;
+    if (this.columns.size === 0) return true;
+
+    for (const columnId of this.columnsOrder) {
+      const col = this.columns.get(columnId);
+      if (col.formationMethod === "table") {
+        if (!col.tableName || !col.columnName) return true;
+      } else if (col.formationMethod === "sql") {
+        if (!col.name.trim() || !col.sqlQuery.trim()) return true;
+      }
+    }
+
+    return false;
   }
 }
 
@@ -176,9 +193,8 @@ const Report = observer(() => {
                   </Button>
 
                   <Button
-                    onClick={() => {
-                      onSubmit();
-                    }}
+                    onClick={onSubmit}
+                    disabled={forms.isDisabled}
                     className="regular bg-gray w-max px-5 flex gap-4"
                     size="lg"
                     variant="secondary"
@@ -197,9 +213,23 @@ const Report = observer(() => {
                     key={columnId}
                     className="flex flex-col gap-10 bg-gray p-5 rounded-d w-full max-w-[230px] md:max-w-[200px] lg:max-w-[230px] h-min"
                   >
-                    <div className="flex flex-col gap-5">
-                      <label className="regular">Метод формирования</label>
+                    <Button
+                      onClick={() => forms.deleteColumn(columnId)}
+                      className="regular bg-background w-full px-5 flex gap-4"
+                      size="lg"
+                      variant="secondary"
+                    >
+                      <img
+                        src="/trash.svg"
+                        width={18}
+                        height={18}
+                        alt="Удалить"
+                      />
+                      <span className="regular">Удалить</span>
+                    </Button>
 
+                    <div className="flex flex-col gap-5">
+                      <label className="regular">Метод формиования</label>
                       <Select
                         onValueChange={(e) =>
                           forms.columns.get(columnId).setFormationMethod(e)

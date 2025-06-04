@@ -41,8 +41,7 @@ const Search = observer(() => {
           columns = SearchState.searchQueries.get(table.id).tableState.columns;
           break;
         case "report":
-          // columns = SearchState.searchQueries.get(table.id).columns
-          columns = [];
+          columns = ReportsStete.reports.find((t) => t.id == table.id).tableState.columns;;
           break;
       }
     }

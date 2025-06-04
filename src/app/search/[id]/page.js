@@ -22,16 +22,24 @@ const Search = observer(() => {
 
   const update = () => {
     try {
-      searchQuery.updateData()
+      searchQuery.updateData();
     } catch (err) {
       toast(err);
     }
   };
 
+  const deleteSearch = () => {
+    const confirmed = confirm("Вы уверены, что хотите удалить этот поисковой запрос?");
+    if (!confirmed) return;
+
+    SearchState.deleteSearchQuery(searchId);
+    router.push("seacrh/new");
+  };
+
   return (
     <>
       {searchResultTable.isLoaded ? (
-        <div className="col-start-2 col-span-5 flex flex-col gap-10">
+        <div className="col-start-2 col-span-5 flex flex-col gap-10 p-2.5 box-border">
           <div className="flex flex-col gap-5">
             <h2>Поиск</h2>
             <div className="flex flex-row gap-5 items-center">
@@ -40,7 +48,7 @@ const Search = observer(() => {
                 <span className="regular">Обновить</span>
               </Button>
 
-              <Button size="lg" variant="secondary">
+              <Button size="lg" variant="secondary" onClick={deleteSearch}>
                 <img src="/trash.svg" alt="Удалить" />
                 <span className="regular">Удалить</span>
               </Button>

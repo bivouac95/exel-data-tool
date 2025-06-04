@@ -8,8 +8,10 @@ import ReportsStete from "@/server_components/ReportsStete";
 import { useParams } from "next/navigation";
 import Table from "@/components/ui/TableGraphics";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const Report = observer(() => {
+  const router = useRouter();
   const reportId = useParams().id;
   const [reportResultTable, setReportResultTable] = useState([]);
   const [reportState, setReportState] = useState({});
@@ -28,10 +30,18 @@ const Report = observer(() => {
     }
   };
 
+  const deleteReport = () => {
+    const confirmed = confirm("Вы уверены, что хотите удалить этот отчет?");
+    if (!confirmed) return;
+
+    ReportsStete.deleteReport(reportId);
+    router.push("report/new");
+  };
+
   return (
     <>
       {reportResultTable.isLoaded ? (
-        <div className="col-start-2 col-span-5 flex flex-col gap-10">
+        <div className="col-start-2 col-span-5 flex flex-col gap-10 p-2.5 box-border">
           <div className="flex flex-col gap-5">
             <h2>Отчет</h2>
             <div className="flex flex-row gap-5 items-center">
@@ -40,7 +50,7 @@ const Report = observer(() => {
                 <span className="regular">Обновить</span>
               </Button>
 
-              <Button size="lg" variant="secondary">
+              <Button size="lg" variant="secondary" onClick={deleteReport}>
                 <img src="/trash.svg" alt="Удалить" />
                 <span className="regular">Удалить</span>
               </Button>

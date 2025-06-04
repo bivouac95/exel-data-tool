@@ -210,6 +210,12 @@ export async function clearTable() {
   db.prepare("DELETE FROM data;").run();
 }
 
+// Удаляет таблицу по имени
+export async function deleteTable(name) {
+  db.prepare(`DROP VIEW IF EXISTS "${name}"`).run();
+  db.prepare(`DELETE FROM tables WHERE name = ?`).run(name);
+}
+
 // Добавляет строку
 export async function insertRow(row, columnNames) {
   const sql = `INSERT INTO data ( ${columnNames.join(", ")} ) VALUES ( ${row

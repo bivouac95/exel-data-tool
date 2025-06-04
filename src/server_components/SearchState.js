@@ -7,6 +7,7 @@ import {
   createSearchQuery,
   getReportData,
   parseColumnNames,
+  deleteTable,
 } from "./database";
 
 class TableColumn {
@@ -60,6 +61,21 @@ class TableState {
     this.columns = columns.map((c) => {
       return new TableColumn(c.name, c.sqlName, c.type);
     });
+  }
+
+  get jsonData() {
+    const objectKeys = this.columns.map((c) => c.name);
+    let result = [];
+    for (let id of this.rowOrder) {
+      const row = this.rows.get(id);
+      const values = row.values.map((v) => v.value);
+      let obj = {};
+      for (let i = 0; i < objectKeys.length; i++) {
+        obj[objectKeys[i]] = values[i];
+      }
+      result.push(obj);
+    }
+    return result;
   }
 }
 
@@ -130,6 +146,11 @@ class SearchState {
     this.searchQueries.set(newQuery.id, newQuery);
     await newQuery.init(columns);
     return newQuery;
+  }
+
+  async deleteSearchQuery(id) {
+    deleteTable(this.searchQueries.get(id).sqlName);
+    this.searchQueries.delete(id);
   }
 }
 
