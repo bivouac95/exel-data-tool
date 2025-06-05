@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import InitialDataState from "@/server_components/InitialDataState";
 import Table from "@/components/ui/Table";
 import Hud from "../components/ui/Hud";
-import { Grid } from "react-loader-spinner";
+import { SquareLoader } from "react-spinners";
 
 const Home = observer(() => {
   return (
@@ -43,7 +43,7 @@ const Home = observer(() => {
           </div>
         ) : (
           <div className="col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
-            <Grid height="50" width="50" className="bg-green" />
+            <SquareLoader height="50" width="50" color="#30A65F" />
           </div>
         )
       ) : (

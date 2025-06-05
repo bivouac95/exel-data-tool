@@ -2,7 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
-import { Grid } from "react-loader-spinner";
+import { SquareLoader } from "react-spinners";
 import { useState, useEffect } from "react";
 import SearchState from "@/server_components/SearchState";
 import { useParams } from "next/navigation";
@@ -29,7 +29,9 @@ const Search = observer(() => {
   };
 
   const deleteSearch = () => {
-    const confirmed = confirm("Вы уверены, что хотите удалить этот поисковой запрос?");
+    const confirmed = confirm(
+      "Вы уверены, что хотите удалить этот поисковой запрос?"
+    );
     if (!confirmed) return;
 
     SearchState.deleteSearchQuery(searchId);
@@ -64,7 +66,7 @@ const Search = observer(() => {
         </div>
       ) : (
         <div className="col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
-          <Grid height="50" width="50" className="bg-green" />
+          <SquareLoader height="50" width="50" color="#30A65F" />
         </div>
       )}
     </>

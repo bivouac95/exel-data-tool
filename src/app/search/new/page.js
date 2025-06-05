@@ -10,7 +10,7 @@ import { getTables } from "@/server_components/database";
 import SearchState from "@/server_components/SearchState";
 import ReportsStete from "@/server_components/ReportsStete";
 import InitialDataState from "@/server_components/InitialDataState";
-import { Grid } from "react-loader-spinner";
+import { SquareLoader } from "react-spinners";
 
 const Search = observer(() => {
   const [searchCreteria, setSearchCriteria] = useState({
@@ -119,7 +119,7 @@ const Search = observer(() => {
         </div>
       ) : (
         <div className="col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
-          <Grid height="50" width="50" className="bg-green" />
+          npm i react-spinners
         </div>
       )}
     </>
