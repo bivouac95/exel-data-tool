@@ -105,7 +105,7 @@ class Report {
       sql += ` FROM ${fromList.join(", ")}`;
     }
     console.log(sql);
-    await createReport(sql, this.id, this.sqlName);
+    await createReport(sql, this.id, this.sqlName, this.name);
   }
 
   // const criteria = {

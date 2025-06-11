@@ -200,9 +200,18 @@ export async function createTable(columnNames, columnTypes) {
     id TEXT PRIMARY KEY,
     type TEXT,
     name TEXT,
+    readable_name TEXT,
     sqlQuery TEXT
   )`;
   db.prepare(createTablesSQL).run();
+
+  const createColumnsSQL = `CREATE TABLE "columns" (
+    id TEXT PRIMARY KEY,
+    tableName TEXT,
+    sqlName TEXT,
+    name TEXT
+  )`;
+  db.prepare(createColumnsSQL).run();
 }
 
 // Удаляет все строки из таблицы
@@ -263,18 +272,18 @@ export async function executeQuery(query) {
 }
 
 // Создать поисковой запрос
-export async function createSearchQuery(query, table, id, name) {
+export async function createSearchQuery(query, table, id, name, readable_name) {
   const createView = `CREATE VIEW ${name} AS SELECT * FROM ${table} WHERE ${query}`;
   db.prepare(createView).run();
-  const createRecord = `INSERT INTO tables (id, type, name, sqlQuery) VALUES (?, ?, ?, ?)`;
-  db.prepare(createRecord).run(id, "search", name, createView);
+  const createRecord = `INSERT INTO tables (id, type, name, readable_name, sqlQuery) VALUES (?, ?, ?, ?, ?)`;
+  db.prepare(createRecord).run(id, "search", name, readable_name, createView);
 }
 
 // Создает отчет
-export async function createReport(query, id, name) {
+export async function createReport(query, id, name, readable_name) {
   db.prepare(query).run();
-  const createRecord = `INSERT INTO tables (id, type, name, sqlQuery) VALUES (?, ?, ?, ?)`;
-  db.prepare(createRecord).run(id, "report", name, query);
+  const createRecord = `INSERT INTO tables (id, type, name, readable_name, sqlQuery) VALUES (?, ?, ?, ?, ?)`;
+  db.prepare(createRecord).run(id, "report", name, readable_name, query);
 }
 
 // Получить данные запроса
@@ -291,8 +300,12 @@ export async function getTables() {
 
 // Получить колонки таблицы по имени таблицы
 export async function getColumns(tableName) {
-  const sql = `SELECT * FROM ${tableName}`;
-  const data = db.prepare(sql).all();
-  if (data.length == 0) return [];
-  else return Object.keys(data[0]);
+  const sql = `SELECT * FROM columns WHERE tableName = ?`;
+  return db.prepare(sql).all(tableName);
+}
+
+// Создани колонки для таблицы
+export async function createColumn(id, tableName, sqlName, name) {
+  const sql = `INSERT INTO columns (id, tableName, sqlName, name) VALUES (?, ?, ?, ?)`;
+  db.prepare(sql).run(id, tableName, sqlName, name);
 }

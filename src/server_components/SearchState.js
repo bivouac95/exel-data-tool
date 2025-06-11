@@ -8,6 +8,7 @@ import {
   getReportData,
   parseColumnNames,
   deleteTable,
+  createColumn,
 } from "./database";
 
 class TableColumn {
@@ -98,7 +99,7 @@ class SearchQuery {
     const key = this.searchKey.replace(/'/g, "''");
 
     const predicates = this.columns.map((col) => {
-      const casted = `CAST(${col} AS TEXT)`; // или AS CHAR
+      const casted = `CAST(${col} AS TEXT)`;
       if (this.regex) {
         return `${casted} REGEXP '${key}'`;
       } else {
@@ -107,9 +108,15 @@ class SearchQuery {
     });
 
     const query = predicates.join(" OR ");
-    console.log("Generated SQL WHERE:", query); // для дебага
 
-    await createSearchQuery(query, this.tableName, this.id, this.sqlName);
+    //createSearchQuery(query, table, id, name, readable_name)
+    await createSearchQuery(
+      query,
+      this.tableName,
+      this.id,
+      this.sqlName,
+      this.name
+    );
   }
 
   async init(columns) {

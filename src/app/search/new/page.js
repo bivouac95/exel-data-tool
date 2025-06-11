@@ -34,14 +34,17 @@ const Search = observer(() => {
       columns = InitialDataState.columns;
     } else {
       const tables = await getTables();
-      const table = tables.find((table) => table.name == searchCreteria.tableName);
+      const table = tables.find(
+        (table) => table.name == searchCreteria.tableName
+      );
 
       switch (table.type) {
         case "search":
           columns = SearchState.searchQueries.get(table.id).tableState.columns;
           break;
         case "report":
-          columns = ReportsStete.reports.find((t) => t.id == table.id).tableState.columns;;
+          columns = ReportsStete.reports.find((t) => t.id == table.id)
+            .tableState.columns;
           break;
       }
     }
@@ -119,7 +122,7 @@ const Search = observer(() => {
         </div>
       ) : (
         <div className="col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
-          npm i react-spinners
+          <SquareLoader height="50" width="50" color="#30A65F" />
         </div>
       )}
     </>
