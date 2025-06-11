@@ -59,9 +59,7 @@ const SearchFormDialog = ({ onSubmit }) => {
 
   // Обёртка для отправки: формируем массив столбцов
   const onFormSubmit = (data) => {
-    const cols = data.column
-      ? [data.column]
-      : columnList.map((c) => c.name);
+    const cols = data.column ? [data.column] : columnList.map((c) => c.name);
     onSubmit({
       tableName: data.tableName,
       columns: cols,
@@ -115,7 +113,7 @@ const SearchFormDialog = ({ onSubmit }) => {
                         className="regular"
                         value={table.name}
                       >
-                        {table.name}
+                        {table.readable_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -130,9 +128,7 @@ const SearchFormDialog = ({ onSubmit }) => {
           {/* Выбор столбца */}
           <div className="flex flex-col gap-5">
             <h2>Столбец</h2>
-            <p className="regular">
-              Выберите столбец для более точной выборки
-            </p>
+            <p className="regular">Выберите столбец для более точной выборки</p>
             <Controller
               name="column"
               control={control}

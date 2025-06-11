@@ -283,7 +283,7 @@ const Report = observer(() => {
                                   className="regular"
                                   value={table.name}
                                 >
-                                  {table.name}
+                                  {table.readable_name}
                                 </SelectItem>
                               ))}
                             </SelectContent>

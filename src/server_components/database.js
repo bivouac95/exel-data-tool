@@ -200,7 +200,7 @@ export async function createTable(columnNames, columnTypes) {
     id TEXT PRIMARY KEY,
     type TEXT,
     name TEXT,
-    readableName TEXT,
+    readable_name TEXT,
     sqlQuery TEXT
   )`;
   db.prepare(createTablesSQL).run();
@@ -267,7 +267,8 @@ export async function executeQuery(query) {
 export async function createSearchQuery(query, table, id, name, readable_name) {
   const createView = `CREATE VIEW ${name} AS SELECT * FROM ${table} WHERE ${query}`;
   db.prepare(createView).run();
-  const createRecord = 'INSERT INTO tables (id, type, name, readable_name, sqlQuery) VALUES (?, ?, ?, ?, ?)';
+  const createRecord =
+    "INSERT INTO tables (id, type, name, readable_name, sqlQuery) VALUES (?, ?, ?, ?, ?)";
   db.prepare(createRecord).run(id, "search", name, readable_name, createView);
 }
 
