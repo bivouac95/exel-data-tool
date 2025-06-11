@@ -57,10 +57,14 @@ class TableState {
     }
   }
 
-  initializeColums(columns) {
+  initializeColums(columns, name) {
     this.columns = columns.map((c) => {
       return new TableColumn(c.name, c.sqlName, c.type);
     });
+
+    for (let c of this.columns) {
+      createColumn(c.id, name, c.name, c.sqlName);
+    }
   }
 
   get jsonData() {
@@ -120,7 +124,7 @@ class SearchQuery {
   async init(columns) {
     this.tableState.startLoading();
     await this.createSQL();
-    this.tableState.initializeColums(columns);
+    this.tableState.initializeColums(columns, this.sqlName);
     const rows = await getReportData(this.sqlName);
     this.tableState.initializeRows(rows);
     this.tableState.finishLoading();

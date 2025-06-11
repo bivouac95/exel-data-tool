@@ -10,6 +10,7 @@ import {
   asyncTransliterate,
   createReport,
   deleteTable,
+  createColumn,
 } from "./database";
 
 class TableColumn {
@@ -57,9 +58,13 @@ class TableState {
     }
   }
 
-  initializeColums(criteria) {
+  initializeColums(criteria, name) {
     for (let c of criteria) {
       this.columns.push(new TableColumn(c.name, c.sqlName));
+    }
+
+    for (let c of this.columns) {
+      createColumn(c.id, name, c.name, c.sqlName);
     }
   }
 
@@ -118,7 +123,7 @@ class Report {
     this.tableState.startLoading();
     this.sqlName = await asyncTransliterate(this.name);
     await this.createSQL(criteria);
-    this.tableState.initializeColums(criteria);
+    this.tableState.initializeColums(criteria, this.sqlName);
     const rows = await getReportData(this.sqlName);
     this.tableState.initializeRows(rows);
     this.tableState.finishLoading();
