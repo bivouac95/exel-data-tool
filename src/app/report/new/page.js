@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { asyncTransliterate, getTables, getColumns } from "@/server_components/database";
+import { asyncTransliterate, getTables } from "@/server_components/database";
 import { nanoid } from "nanoid";
 import PressetsForm from "@/components/ui/PressetsForm";
 import ReportsStete from "@/server_components/ReportsStete";
@@ -54,7 +54,30 @@ class FormColumn {
 
   async setTableName(name) {
     this.tableName = name;
-    this.tableColumns = await getColumns(name);
+    this.tableColumns = await this.getTableColumns();
+  }
+
+  async setColumnName(name) {
+    this.columnName = name;
+    this.sqlName = name;
+    this.name = this.tableColumns.find((c) => c.sqlName == name).name;
+    if (this.formationMethod == "table") this.sqlQuery = `${name}`;
+  }
+
+  async getTableColumns() {
+    if (this.tableName == "data") return InitialDataState.columns;
+
+    const tables = await getTables();
+    const table = tables.find((table) => table.name == this.tableName);
+    switch (table.type) {
+      case "search":
+        return SearchState.searchQueries.get(table.id).tableState.columns;
+        break;
+      case "report":
+        return ReportsStete.reports.find((t) => t.id == table.id).tableState
+          .columns;
+        break;
+    }
   }
 }
 
@@ -72,7 +95,7 @@ class FormColumns {
 
   async addColumn() {
     const defaultColumns = InitialDataState.columns;
-    const column = new FormColumn( await getColumns("data") );
+    const column = new FormColumn(defaultColumns);
     this.columns.set(column.id, column);
     this.columnsOrder.push(column.id);
   }
@@ -260,7 +283,7 @@ const Report = observer(() => {
                                   className="regular"
                                   value={table.name}
                                 >
-                                  {table.readable_name}
+                                  {table.name}
                                 </SelectItem>
                               ))}
                             </SelectContent>

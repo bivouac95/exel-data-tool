@@ -8,7 +8,6 @@ import {
   getReportData,
   parseColumnNames,
   deleteTable,
-  createColumn,
 } from "./database";
 
 class TableColumn {
@@ -99,7 +98,7 @@ class SearchQuery {
     const key = this.searchKey.replace(/'/g, "''");
 
     const predicates = this.columns.map((col) => {
-      const casted = `CAST(${col} AS TEXT)`;
+      const casted = `CAST(${col} AS TEXT)`; // или AS CHAR
       if (this.regex) {
         return `${casted} REGEXP '${key}'`;
       } else {
@@ -109,7 +108,6 @@ class SearchQuery {
 
     const query = predicates.join(" OR ");
 
-    //createSearchQuery(query, table, id, name, readable_name)
     await createSearchQuery(
       query,
       this.tableName,

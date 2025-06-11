@@ -121,7 +121,7 @@ export default function PressetsForm({ setString }) {
                   className="regular"
                   value={table.name}
                 >
-                  {table.readable_name}
+                  {table.name}
                 </SelectItem>
               ))}
             </SelectContent>

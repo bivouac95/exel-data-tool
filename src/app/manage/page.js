@@ -115,7 +115,7 @@ const Manage = observer(() => {
         XLSX.utils.book_append_sheet(wb, worksheet, sheetName.slice(0, 31)); // Excel ограничивает длину имени листа
       } catch (error) {
         console.error("Ошибка экспорта таблицы", table, error);
-        toast.error(`Ошибка при экспорте таблицы: ${table.readable_name}`);
+        toast.error(`Ошибка при экспорте таблицы: ${table.name}`);
       }
     });
 
