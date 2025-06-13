@@ -12,12 +12,7 @@ import {
   getData,
   clearTable,
   updateRow,
-<<<<<<< HEAD
   insertColumns,
-  getBetterColumns,
-=======
-  createColumn,
->>>>>>> 0ddb385826dca610ca3844009ea27fa8d4703940
 } from "./database";
 
 class TableColumn {
@@ -104,10 +99,6 @@ class InitialDataState {
     this.columns = columnNames.map(
       (name, i) => new TableColumn(name, sqlNames[i], columnTypes[i])
     );
-
-    for (let c of this.columns) {
-      createColumn(c.id, "data", c.name, c.sqlName);
-    }
   }
 
   initializeRows(json) {

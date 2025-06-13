@@ -7,7 +7,6 @@ import {
   asyncTransliterate,
   createReport,
   deleteTable,
-  createColumn,
 } from "./database";
 
 class TableColumn {
@@ -59,15 +58,6 @@ class TableState {
     for (let c of criteria) {
       this.columns.push(new TableColumn(c.name, c.sqlName));
     }
-<<<<<<< HEAD
-    console.log(this.columns, '\n');
-    
-=======
-
-    for (let c of this.columns) {
-      createColumn(c.id, name, c.name, c.sqlName);
-    }
->>>>>>> 0ddb385826dca610ca3844009ea27fa8d4703940
   }
 
   get jsonData() {
