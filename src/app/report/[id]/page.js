@@ -41,7 +41,7 @@ const Report = observer(() => {
   return (
     <>
       {reportResultTable.isLoaded ? (
-        <div className="col-start-2 col-span-5 flex flex-col gap-10 p-2.5 box-border">
+        <div className="max-mobile:col-start-1 col-start-2 max-mobile:col-span-2 col-span-5 flex flex-col gap-10 p-2.5 box-border">
           <div className="flex flex-col gap-5">
             <h2>Отчет</h2>
             <div className="flex flex-row gap-5 items-center">
@@ -65,7 +65,7 @@ const Report = observer(() => {
           <Table tableState={reportResultTable} />
         </div>
       ) : (
-        <div className="col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
+        <div className="max-mobile:col-start-1 col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
           <SquareLoader height="50" width="50" color="#30A65F" />
         </div>
       )}

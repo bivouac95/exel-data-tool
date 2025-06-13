@@ -42,7 +42,7 @@ const Search = observer(() => {
   return (
     <>
       {isLoaded ? (
-        <div className="col-start-2 md:col-start-3 lg:col-start-3 col-span-4 lg:col-span-5 flex flex-col gap-10">
+        <div className="max-mobile:col-start-1 col-start-2 md:col-start-3 lg:col-start-3 max-mobile:col-span-2 col-span-4 lg:col-span-5 flex flex-col gap-10 px-2.5">
           <div className="flex flex-col gap-5">
             <h2>Поиск</h2>
             <SearchFormDialog onSubmit={onSubmit} />
@@ -72,7 +72,7 @@ const Search = observer(() => {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+          <div className="grid max-mobile-sm:grid-cols-2 grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
             <div className="flex flex-col gap-5 w-full">
               <img src="/digit_1.png" alt="" />
               <p className="regular">Дайте название отчету</p>
@@ -102,7 +102,7 @@ const Search = observer(() => {
           </div>
         </div>
       ) : (
-        <div className="col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
+        <div className="max-mobile:col-start-1 col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
           <SquareLoader height="50" width="50" color="#30A65F" />
         </div>
       )}

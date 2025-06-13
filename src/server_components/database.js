@@ -204,12 +204,12 @@ export async function createTable(columnNames, columnTypes) {
     sqlQuery TEXT
   )`;
   db.prepare(createTablesSQL).run();
-  
+
   const createColumnsSQL = `CREATE TABLE "columns" (
     id TEXT PRIMARY KEY,
     sqlName TEXT,
     name TEXT,
-    tableName TEXT,
+    tableName TEXT
   )`;
   db.prepare(createColumnsSQL).run();
 }

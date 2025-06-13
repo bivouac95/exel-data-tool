@@ -48,7 +48,8 @@
   --color-dark-gray:#7E7E7E;
   --color-green: #30A65F;
 
-  --breakpoint-mobile-lg: 640px;
+  --breakpoint-mobile-sm: 600px;
+  --breakpoint-mobile: 900px;
   --breakpoint-sm: 1280px;
   --breakpoint-md: 1440px;
   --breakpoint-lg: 1920px;

@@ -11,12 +11,12 @@ const Home = observer(() => {
     <>
       {!InitialDataState.isLoaded ? (
         !InitialDataState.isLoading ? (
-          <div className="col-start-2 md:col-start-3 col-span-3 flex flex-col gap-10">
+          <div className="max-mobile:col-start-1 col-start-2 md:col-start-3 col-span-3 flex flex-col gap-10 px-2.5">
             <div className="flex flex-col gap-5">
               <h2>Тут ничего нет</h2>
               <p className="regular">Начните работу за 3 простых шага</p>
             </div>
-            <div className="flex flex-row gap-5">
+            <div className="grid max-mobile-sm:grid-cols-2 grid-cols-3 gap-5">
               <div className="flex flex-col gap-5 w-full">
                 <img src="/digit_1.png" alt="" />
                 <p className="regular">
@@ -42,12 +42,12 @@ const Home = observer(() => {
             </div>
           </div>
         ) : (
-          <div className="col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
+          <div className="max-mobile:col-start-1 col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
             <SquareLoader height="50" width="50" color="#30A65F" />
           </div>
         )
       ) : (
-        <div className="col-start-2 md:col-start-2 lg:col-start-2">
+        <div className="max-mobile:col-start-1 col-start-2 md:col-start-2 lg:col-start-2 px-2.5">
           <Table tableState={InitialDataState} />
           <Hud />
         </div>

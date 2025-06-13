@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
       <body>
         <main className="relative flex justify-center">
           <Aside />
-          <div className="body-width h-dvh py-5 grid gap-5 grid-cols-4 md:grid-cols-6 lg:grid-cols-7 text-foreground">
+          <div className="max-mobile:pt-16 body-width h-dvh py-5 grid gap-5 grid-cols-4 max-mobile:grid-cols-2 md:grid-cols-6 lg:grid-cols-7 text-foreground">
             {children}
           </div>
           <Toaster />

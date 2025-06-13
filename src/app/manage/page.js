@@ -154,7 +154,7 @@ const Manage = observer(() => {
   return (
     <>
       {isLoaded ? (
-        <div className="col-start-2 col-span-5 flex flex-col gap-10 p-2.5 box-border pb-40">
+        <div className="max-mobile:col-start-1 col-start-2 max-mobile:col-span-2 col-span-5 flex flex-col gap-10 p-2.5 box-border pb-40">
           <div className="flex flex-col gap-5">
             <h2>Менеджен таблиц</h2>
             <span className="regular">
@@ -165,7 +165,7 @@ const Manage = observer(() => {
 
           <div className="flex flex-col gap-5">
             <h2>Загруженные таблицы</h2>
-            <div className="grid grid-cols-3 md:grid-cols-5 gap-5">
+            <div className="grid max-mobile-sm:grid-cols-2 grid-cols-3 md:grid-cols-5 gap-5">
               <div className="h-80 bg-gray flex box-border p-5 flex-col justify-between rounded-d">
                 <header className="flex flex-col gap-2.5">
                   <Link href="/">
@@ -206,7 +206,7 @@ const Manage = observer(() => {
             }
           >
             <h2>Сформированные отчеты</h2>
-            <div className="grid grid-cols-3 md:grid-cols-5 gap-5">
+            <div className="grid max-mobile-sm:grid-cols-2 grid-cols-3 md:grid-cols-5 gap-5">
               {tables.map((t) => {
                 if (t.type == "report")
                   return (
@@ -253,7 +253,7 @@ const Manage = observer(() => {
             }
           >
             <h2>Поисковые запросы</h2>
-            <div className="grid grid-cols-3 md:grid-cols-5 gap-5">
+            <div className="grid max-mobile-sm:grid-cols-2 grid-cols-3 md:grid-cols-5 gap-5">
               {tables.map((t) => {
                 if (t.type == "search")
                   return (
@@ -293,7 +293,7 @@ const Manage = observer(() => {
           </div>
         </div>
       ) : (
-        <div className="col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
+        <div className="max-mobile:col-start-1 col-start-2 md:col-start-3 col-span-3 h-full flex items-center justify-center">
           <SquareLoader height="50" width="50" color="#30A65F" />
         </div>
       )}
