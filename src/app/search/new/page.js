@@ -1,4 +1,3 @@
-// Search.js
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -6,9 +5,8 @@ import { observer } from "mobx-react-lite";
 import SearchFormDialog from "@/components/ui/SearchFormDialog";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { getTables } from "@/server_components/database";
+import { getColumns, getBetterColumns } from "@/server_components/database";
 import SearchState from "@/server_components/SearchState";
-import ReportsStete from "@/server_components/ReportsStete";
 import InitialDataState from "@/server_components/InitialDataState";
 import { SquareLoader } from "react-spinners";
 
@@ -30,31 +28,14 @@ const Search = observer(() => {
     setIsLoaded(false);
     let columns = [];
 
-    if (searchCreteria.tableName == "data") {
-      columns = InitialDataState.columns;
-    } else {
-      const tables = await getTables();
-      const table = tables.find(
-        (table) => table.name == searchCreteria.tableName
-      );
-
-      switch (table.type) {
-        case "search":
-          columns = SearchState.searchQueries.get(table.id).tableState.columns;
-          break;
-        case "report":
-          columns = ReportsStete.reports.find((t) => t.id == table.id)
-            .tableState.columns;
-          break;
-      }
-    }
+    columns = await getBetterColumns(searchCreteria.tableName);
 
     const newQuery = await SearchState.addSearchQuery(
       key,
       searchCreteria,
       columns
     );
-    console.log(newQuery);
+
     router.push(`/search/${newQuery.id}`);
   };
 

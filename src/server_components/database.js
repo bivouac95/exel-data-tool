@@ -196,6 +196,14 @@ export async function createTable(columnNames, columnTypes) {
   )`;
   db.prepare(createDataSQL).run();
 
+  const createColumnsSQL = `CREATE TABLE "columns" (
+    id TEXT PRIMARY KEY,
+    sqlName TEXT,
+    name TEXT,
+    tableName TEXT
+  )`;
+  db.prepare(createColumnsSQL).run();
+
   const createTablesSQL = `CREATE TABLE "tables" (
     id TEXT PRIMARY KEY,
     type TEXT,
@@ -275,7 +283,7 @@ export async function createSearchQuery(query, table, id, name, readable_name) {
 // Создает отчет
 export async function createReport(query, id, name, readable_name) {
   db.prepare(query).run();
-  const createRecord = `INSERT INTO tables (id, type, name, sqlQuery) VALUES (?, ?, ?, ?, ?)`;
+  const createRecord = `INSERT INTO tables (id, type, name, readable_name, sqlQuery) VALUES (?, ?, ?, ?, ?)`;
   db.prepare(createRecord).run(id, "report", name, readable_name, query);
 }
 
@@ -297,4 +305,20 @@ export async function getColumns(tableName) {
   const data = db.prepare(sql).all();
   if (data.length == 0) return [];
   else return Object.keys(data[0]);
+}
+
+export async function insertColumns(rows) {
+  const sql = `INSERT INTO columns (id, sqlName, name, tableName) VALUES (?, ?, ?, ?)`;
+  const insert = db.prepare(sql);
+  const insertMany = db.transaction((rows) => {
+    for (let row of rows) {
+      insert.run(...row);
+    }
+  });
+  insertMany(rows);
+}
+
+export async function getBetterColumns(tableName) {
+  const sql = `SELECT * FROM columns WHERE tableName= '${tableName}'`;
+  return db.prepare(sql).all();
 }

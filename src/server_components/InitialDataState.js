@@ -12,6 +12,8 @@ import {
   getData,
   clearTable,
   updateRow,
+  insertColumns,
+  getBetterColumns,
 } from "./database";
 
 class TableColumn {
@@ -153,6 +155,9 @@ class InitialDataState {
   async createTableSQL() {
     await createTable(this.sqlColumnNames, this.columnTypes);
     await insertRows(this.rowValuesWithIds, ["id", ...this.sqlColumnNames]);
+    await insertColumns(
+      this.columns.map((c) => [c.id, c.sqlName, c.name, "data"])
+    );
   }
 
   async updateTableSQL() {
@@ -183,7 +188,6 @@ class InitialDataState {
   get columnTypes() {
     return this.columns.map((col) => col.type);
   }
-
 
   get rowValuesWithIds() {
     return this.rowOrder.map((id) => {

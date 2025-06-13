@@ -2,20 +2,13 @@
 
 import { makeAutoObservable } from "mobx";
 import { nanoid } from "nanoid";
-import {
-  getColumns,
-  createSearchQuery,
-  getReportData,
-  parseColumnNames,
-  deleteTable,
-} from "./database";
+import { createSearchQuery, getReportData, deleteTable } from "./database";
 
 class TableColumn {
-  constructor(name, sqlName, type) {
+  constructor(name, sqlName) {
     this.id = nanoid();
     this.name = name;
     this.sqlName = sqlName;
-    this.type = type;
   }
 }
 
@@ -59,7 +52,7 @@ class TableState {
 
   initializeColums(columns) {
     this.columns = columns.map((c) => {
-      return new TableColumn(c.name, c.sqlName, c.type);
+      return new TableColumn(c.name, c.sqlName);
     });
   }
 
@@ -119,8 +112,8 @@ class SearchQuery {
 
   async init(columns) {
     this.tableState.startLoading();
-    await this.createSQL();
     this.tableState.initializeColums(columns);
+    await this.createSQL();
     const rows = await getReportData(this.sqlName);
     this.tableState.initializeRows(rows);
     this.tableState.finishLoading();

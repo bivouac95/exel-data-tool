@@ -18,9 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getTables, getColumns } from "@/server_components/database";
+import { getTables, getBetterColumns } from "@/server_components/database";
 import { useEffect, useState } from "react";
-import { nanoid } from "nanoid";
 
 const SearchFormDialog = ({ onSubmit }) => {
   const [tableList, setTableList] = useState([]);
@@ -49,8 +48,8 @@ const SearchFormDialog = ({ onSubmit }) => {
 
   useEffect(() => {
     if (selectedTable) {
-      getColumns(selectedTable).then((columns) => {
-        setColumnList(columns.map((c) => ({ id: nanoid(), name: c })));
+      getBetterColumns(selectedTable).then((columns) => {
+        setColumnList(columns);
       });
     } else {
       setColumnList([]);
@@ -59,7 +58,7 @@ const SearchFormDialog = ({ onSubmit }) => {
 
   // Обёртка для отправки: формируем массив столбцов
   const onFormSubmit = (data) => {
-    const cols = data.column ? [data.column] : columnList.map((c) => c.name);
+    const cols = data.column ? [data.column] : columnList.map((c) => c.sqlName);
     onSubmit({
       tableName: data.tableName,
       columns: cols,
@@ -150,7 +149,7 @@ const SearchFormDialog = ({ onSubmit }) => {
                       <SelectItem
                         key={col.id}
                         className="regular"
-                        value={col.name}
+                        value={col.sqlName}
                       >
                         {col.name}
                       </SelectItem>

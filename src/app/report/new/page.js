@@ -12,7 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { asyncTransliterate, getTables } from "@/server_components/database";
+import {
+  asyncTransliterate,
+  getTables,
+  getBetterColumns,
+} from "@/server_components/database";
 import { nanoid } from "nanoid";
 import PressetsForm from "@/components/ui/PressetsForm";
 import ReportsStete from "@/server_components/ReportsStete";
@@ -24,7 +28,8 @@ class FormColumn {
   constructor(defaultColumns) {
     this.id = nanoid();
     this.name = "";
-    (this.sqlName = ""), (this.sqlQuery = "");
+    this.sqlName = "";
+    this.sqlQuery = "";
 
     this.formationMethod = "table"; // table || sql
     this.tableName = "data";
@@ -54,7 +59,7 @@ class FormColumn {
 
   async setTableName(name) {
     this.tableName = name;
-    this.tableColumns = await this.getTableColumns();
+    this.tableColumns = await getBetterColumns(this.tableName);
   }
 
   async setColumnName(name) {
@@ -62,22 +67,6 @@ class FormColumn {
     this.sqlName = name;
     this.name = this.tableColumns.find((c) => c.sqlName == name).name;
     if (this.formationMethod == "table") this.sqlQuery = `${name}`;
-  }
-
-  async getTableColumns() {
-    if (this.tableName == "data") return InitialDataState.columns;
-
-    const tables = await getTables();
-    const table = tables.find((table) => table.name == this.tableName);
-    switch (table.type) {
-      case "search":
-        return SearchState.searchQueries.get(table.id).tableState.columns;
-        break;
-      case "report":
-        return ReportsStete.reports.find((t) => t.id == table.id).tableState
-          .columns;
-        break;
-    }
   }
 }
 
@@ -117,6 +106,7 @@ class FormColumns {
       };
       res.push(criteria);
     }
+
     const report = await ReportsStete.addReport(this.reportName, res);
     return report;
   }

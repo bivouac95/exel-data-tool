@@ -3,10 +3,7 @@
 import { makeAutoObservable } from "mobx";
 import { nanoid } from "nanoid";
 import {
-  getColumns,
-  createSearchQuery,
   getReportData,
-  parseColumnNames,
   asyncTransliterate,
   createReport,
   deleteTable,
@@ -61,6 +58,8 @@ class TableState {
     for (let c of criteria) {
       this.columns.push(new TableColumn(c.name, c.sqlName));
     }
+    console.log(this.columns, '\n');
+    
   }
 
   get jsonData() {
@@ -104,7 +103,6 @@ class Report {
     if (fromList.length > 0) {
       sql += ` FROM ${fromList.join(", ")}`;
     }
-    console.log(sql);
     await createReport(sql, this.id, this.sqlName, this.name);
   }
 
