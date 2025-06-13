@@ -212,6 +212,14 @@ export async function createTable(columnNames, columnTypes) {
     sqlQuery TEXT
   )`;
   db.prepare(createTablesSQL).run();
+  
+  const createColumnsSQL = `CREATE TABLE "columns" (
+    id TEXT PRIMARY KEY,
+    sqlName TEXT,
+    name TEXT,
+    tableName TEXT,
+  )`;
+  db.prepare(createColumnsSQL).run();
 }
 
 // Удаляет все строки из таблицы
@@ -305,8 +313,12 @@ export async function getColumns(tableName) {
   const data = db.prepare(sql).all();
   if (data.length == 0) return [];
   else return Object.keys(data[0]);
+
+  // const sql = `SELECT * FROM columns WHERE tableName = ?`;
+  // db.prepare(sql).all(tableName);
 }
 
+<<<<<<< HEAD
 export async function insertColumns(rows) {
   const sql = `INSERT INTO columns (id, sqlName, name, tableName) VALUES (?, ?, ?, ?)`;
   const insert = db.prepare(sql);
@@ -322,3 +334,9 @@ export async function getBetterColumns(tableName) {
   const sql = `SELECT * FROM columns WHERE tableName= '${tableName}'`;
   return db.prepare(sql).all();
 }
+=======
+export async function createColumn(id, tableName, name, sqlName) {
+  const createColumnSQL = `INSERT INTO columns (id, tableName, name, sqlName) VALUES (?, ?, ?, ?)`;
+  db.prepare(createColumnSQL).run(id, tableName, name, sqlName);
+}
+>>>>>>> 0ddb385826dca610ca3844009ea27fa8d4703940
