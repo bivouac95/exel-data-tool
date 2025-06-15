@@ -22,8 +22,6 @@ const Search = observer(() => {
       const table = state.searchQueries.get(searchId);
       setSearchQuery(table);
       setSearchResultTable(table.tableState);
-
-      console.log("searchQuery: ", table);
     });
   }, []);
 

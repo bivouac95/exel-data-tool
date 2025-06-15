@@ -17,10 +17,10 @@ import {
   getTables,
   getBetterColumns,
 } from "@/server_components/database";
+import { getReportsState } from "@/server_components/statesManager";
 import { nanoid } from "nanoid";
 import PressetsForm from "@/components/ui/PressetsForm";
 import ReportsStete from "@/server_components/ReportsStete";
-import SearchState from "@/server_components/SearchState";
 import { useRouter } from "next/navigation";
 import { SquareLoader } from "react-spinners";
 
@@ -94,7 +94,7 @@ class FormColumns {
     this.columnsOrder = this.columnsOrder.filter((colId) => colId !== id);
   }
 
-  async handleSubmit() {
+  async handleSubmit(state) {
     let res = [];
     for (let formColumnId of this.columnsOrder) {
       const column = this.columns.get(formColumnId);
@@ -107,7 +107,7 @@ class FormColumns {
       res.push(criteria);
     }
 
-    const report = await ReportsStete.addReport(this.reportName, res);
+    const report = await state.addReport(this.reportName, res);
     return report;
   }
 
@@ -129,6 +129,7 @@ class FormColumns {
 }
 
 const Report = observer(() => {
+  const [loadedReports, setLoadedReports] = useState({});
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(true);
   const [tableList, setTableList] = useState([]);
@@ -138,11 +139,14 @@ const Report = observer(() => {
     getTables().then((tables) => {
       setTableList(tables);
     });
+    getReportsState().then((state) => {
+      setLoadedReports(state);
+    });
   }, []);
 
   async function onSubmit() {
     setIsLoaded(false);
-    const report = await forms.handleSubmit();
+    const report = await forms.handleSubmit(loadedReports);
     router.push(`/report/${report.id}`);
   }
 

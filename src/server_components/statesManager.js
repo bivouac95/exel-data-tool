@@ -14,5 +14,7 @@ export async function getSearchState() {
 }
 
 export async function getReportsState() {
+  await InitialDataState.loadSQLData();
+  await ReportsStete.loadSQLData();
   return ReportsStete;
 }

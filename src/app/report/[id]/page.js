@@ -4,22 +4,26 @@ import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
 import { SquareLoader } from "react-spinners";
 import { useState, useEffect } from "react";
-import ReportsStete from "@/server_components/ReportsStete";
 import { useParams } from "next/navigation";
 import Table from "@/components/ui/TableGraphics";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getReportsState } from "@/server_components/statesManager";
 
 const Report = observer(() => {
+  const [loadedReports, setLoadedReports] = useState({});
   const router = useRouter();
   const reportId = useParams().id;
   const [reportResultTable, setReportResultTable] = useState([]);
   const [reportState, setReportState] = useState({});
 
   useEffect(() => {
-    const table = ReportsStete.reports.find((report) => report.id == reportId);
-    setReportState(table);
-    setReportResultTable(table.tableState);
+    getReportsState().then((state) => {
+      setLoadedReports(state);
+      const table = state.reports.find((report) => report.id == reportId);
+      setReportState(table);
+      setReportResultTable(table.tableState);
+    });
   }, []);
 
   const update = () => {
@@ -34,7 +38,7 @@ const Report = observer(() => {
     const confirmed = confirm("Вы уверены, что хотите удалить этот отчет?");
     if (!confirmed) return;
 
-    ReportsStete.deleteReport(reportId);
+    loadedReports.deleteReport(reportId);
     router.push("report/new");
   };
 

@@ -7,6 +7,9 @@ import {
   asyncTransliterate,
   createReport,
   deleteTable,
+  getTables,
+  getBetterColumns,
+  insertColumns,
 } from "./database";
 
 class TableColumn {
@@ -54,7 +57,7 @@ class TableState {
     }
   }
 
-  initializeColums(criteria, name) {
+  initializeColums(criteria) {
     for (let c of criteria) {
       this.columns.push(new TableColumn(c.name, c.sqlName));
     }
@@ -77,8 +80,8 @@ class TableState {
 }
 
 class Report {
-  constructor(name) {
-    this.id = nanoid();
+  constructor(name, id = null) {
+    this.id = id ? id : nanoid();
     this.name = name;
     this.sqlName = "";
     this.sqlQuery = "";
@@ -102,6 +105,15 @@ class Report {
       sql += ` FROM ${fromList.join(", ")}`;
     }
     await createReport(sql, this.id, this.sqlName, this.name);
+
+    await insertColumns(
+      this.tableState.columns.map((c) => [
+        c.id,
+        c.sqlName,
+        c.name,
+        this.sqlName,
+      ])
+    );
   }
 
   // const criteria = {
@@ -113,8 +125,8 @@ class Report {
   async init(criteria) {
     this.tableState.startLoading();
     this.sqlName = await asyncTransliterate(this.name);
-    await this.createSQL(criteria);
     this.tableState.initializeColums(criteria, this.sqlName);
+    await this.createSQL(criteria);
     const rows = await getReportData(this.sqlName);
     this.tableState.initializeRows(rows);
     this.tableState.finishLoading();
@@ -148,6 +160,20 @@ class ReportsStete {
     const report = this.reports.find((r) => r.id === id);
     deleteTable(report.sqlName);
     this.reports = this.reports.filter((r) => r.id !== id);
+  }
+
+  async loadSQLData() {
+    const reports = (await getTables()).filter((t) => t.type == "report");
+    for (let r of reports) {
+      const report = new Report(r.readable_name, r.id);
+      report.sqlName = r.name;
+      report.tableState.initializeColums(
+        await getBetterColumns(report.sqlName)
+      );
+      report.updateData();
+
+      this.reports.push(report);
+    }
   }
 }
 

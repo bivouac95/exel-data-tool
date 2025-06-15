@@ -4,11 +4,13 @@ import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
 import { SquareLoader } from "react-spinners";
 import { useState, useEffect } from "react";
-import SearchState from "@/server_components/SearchState";
-import InitialDataState from "@/server_components/InitialDataState";
-import ReportsStete from "@/server_components/ReportsStete";
 import { toast } from "sonner";
 import { getTables } from "@/server_components/database";
+import {
+  getSearchState,
+  getInitialDataState,
+  getReportsState,
+} from "@/server_components/statesManager";
 import Link from "next/link";
 import { X } from "lucide-react";
 import * as XLSX from "xlsx";
@@ -18,6 +20,37 @@ const Manage = observer(() => {
   const [tables, setTables] = useState([]);
   const [selectedTables, setSelectedTables] = useState([]);
   const [isInitialTableSelected, setIsInitialTableSelected] = useState(false);
+
+  const [loadedReports, setLoadedReports] = useState({});
+  const [loadedSearch, setLoadedSearch] = useState({});
+  const [loadedData, setLoadedData] = useState({});
+
+  useEffect(() => {
+    getSearchState().then((state) => {
+      setLoadedSearch(state);
+    });
+    getInitialDataState().then((state) => {
+      setLoadedData(state);
+    });
+    getReportsState().then((state) => {
+      setLoadedReports(state);
+    });
+
+    let result = [];
+    getTables().then((tables) => {
+      for (let table of tables) {
+        let tableData = {
+          id: table.id,
+          sqlName: table.name,
+          name: table.readable_name,
+          type: table.type,
+        };
+        result.push(tableData);
+      }
+      setTables(result);
+      setIsLoaded(true);
+    });
+  }, []);
 
   function onSelect(table) {
     setSelectedTables((prev) =>
@@ -37,16 +70,16 @@ const Manage = observer(() => {
     if (!confirmed) return;
 
     if (isInitialTableSelected) {
-      InitialDataState.deleteTable();
+      loadedData.deleteTable();
     }
 
     selectedTables.forEach((table) => {
       switch (table.type) {
         case "search":
-          SearchState.deleteSearchQuery(table.id);
+          loadedSearch.deleteSearchQuery(table.id);
           break;
         case "report":
-          ReportsStete.deleteReport(table.id);
+          loadedReports.deleteReport(table.id);
           break;
       }
     });
@@ -71,11 +104,11 @@ const Manage = observer(() => {
     selectedTables.forEach((table) => {
       switch (table.type) {
         case "search":
-          const searchQuery = SearchState.searchQueries.get(table.id);
+          const searchQuery = loadedSearch.searchQueries.get(table.id);
           if (searchQuery?.updateData) searchQuery.updateData();
           break;
         case "report":
-          const report = ReportsStete.reports.find((r) => r.id === table.id);
+          const report = loadedReports.reports.find((r) => r.id === table.id);
           if (report?.updateData) report.updateData();
           break;
         case "data":
@@ -95,7 +128,7 @@ const Manage = observer(() => {
 
     const wb = XLSX.utils.book_new();
     if (isInitialTableSelected) {
-      let data = InitialDataState.jsonData;
+      let data = loadedData.jsonData;
       const worksheet = XLSX.utils.json_to_sheet(data);
       const sheetName = "Исходные данные";
       XLSX.utils.book_append_sheet(wb, worksheet, sheetName.slice(0, 31));
@@ -107,10 +140,10 @@ const Manage = observer(() => {
       try {
         switch (table.type) {
           case "search":
-            data = SearchState.searchQueries.get(table.id).tableState.jsonData;
+            data = loadedSearch.searchQueries.get(table.id).tableState.jsonData;
             break;
           case "report":
-            data = ReportsStete.reports.find((r) => r.id === table.id)
+            data = loadedReports.reports.find((r) => r.id === table.id)
               .tableState.jsonData;
             break;
         }
@@ -127,34 +160,6 @@ const Manage = observer(() => {
     XLSX.writeFile(wb, "tables_export.xlsx");
     toast.success("Экспорт завершён");
   }
-
-  useEffect(() => {
-    let result = [];
-    getTables().then((tables) => {
-      for (let table of tables) {
-        let tableData = {
-          id: table.id,
-          sqlName: table.name,
-          name: "",
-          type: table.type,
-        };
-        switch (table.type) {
-          case "search":
-            tableData.name = SearchState.searchQueries.get(table.id).name;
-            break;
-          case "report":
-            tableData.name = ReportsStete.reports.find(
-              (t) => t.id == table.id
-            ).name;
-            break;
-        }
-        result.push(tableData);
-      }
-      setTables(result);
-      console.log(result);
-      setIsLoaded(true);
-    });
-  }, []);
 
   return (
     <>
