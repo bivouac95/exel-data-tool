@@ -4,13 +4,25 @@ import { observer } from "mobx-react-lite";
 import InitialDataState from "@/server_components/InitialDataState";
 import Table from "@/components/ui/Table";
 import Hud from "../components/ui/Hud";
+import { getInitialDataState } from "@/server_components/statesManager";
 import { SquareLoader } from "react-spinners";
+import { useEffect, useState } from "react";
 
 const Home = observer(() => {
+  const [initialData, setInitialData] = useState({
+    isLoaded: false,
+    isLoading: true,
+  });
+  useEffect(() => {
+    getInitialDataState().then((state) => {
+      setInitialData(state);
+    });
+  }, []);
+
   return (
     <>
-      {!InitialDataState.isLoaded ? (
-        !InitialDataState.isLoading ? (
+      {!initialData.isLoaded ? (
+        !initialData.isLoading ? (
           <div className="max-mobile:col-start-1 col-start-2 md:col-start-3 col-span-3 flex flex-col gap-10 px-2.5">
             <div className="flex flex-col gap-5">
               <h2>Тут ничего нет</h2>
@@ -48,7 +60,7 @@ const Home = observer(() => {
         )
       ) : (
         <div className="max-mobile:col-start-1 col-start-2 md:col-start-2 lg:col-start-2 px-2.5">
-          <Table tableState={InitialDataState} />
+          <Table tableState={initialData} />
           <Hud />
         </div>
       )}

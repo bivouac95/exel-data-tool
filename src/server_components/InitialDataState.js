@@ -13,11 +13,12 @@ import {
   clearTable,
   updateRow,
   insertColumns,
+  getBetterColumns,
 } from "./database";
 
 class TableColumn {
-  constructor(name, sqlName, type) {
-    this.id = nanoid();
+  constructor(name, sqlName, type, id = null) {
+    this.id = id ? id : nanoid();
     this.name = name;
     this.sqlName = sqlName;
     this.type = type;
@@ -26,8 +27,8 @@ class TableColumn {
 }
 
 class TableRow {
-  constructor(values, editing = false) {
-    this.id = nanoid();
+  constructor(values, editing = false, id = null) {
+    this.id = id ? id : nanoid();
     this.values = values.map((v) => ({ id: nanoid(), value: v }));
     this.editing = editing;
     makeAutoObservable(this);
@@ -180,14 +181,41 @@ class InitialDataState {
     }
   }
 
-  async getSQLData() {
-    console.log(await getData());
-  }
-
   async deleteTable() {
     this.isLoading = true;
     await clearTable();
     this.isLoaded = false;
+  }
+
+  async loadSQLData() {
+    if (!this.isLoaded) {
+      this.startLoading();
+      const data = await getData();
+      if (data.length == 0) {
+        this.isLoaded = false;
+        this.isLoading = false;
+        return;
+      }
+
+      const columns = await getBetterColumns("data");
+      let columnTypes = await parseColumnTypes(Object.values(data[0]));
+      columnTypes.shift();
+
+      this.columns = columns.map(
+        //id, sqlName, name, tableName
+        (c, i) => new TableColumn(c.name, c.sqlName, columnTypes[i], c.id)
+      );
+
+      this.rows.clear();
+      for (let row of data) {
+        this.rowOrder.push(row.id);
+        const { id, ...withoutId } = row;
+        const tr = new TableRow(Object.values(withoutId), false, row.id);
+        this.rows.set(row.id, tr);
+      }
+
+      this.finishLoading();
+    }
   }
 
   // Getters
