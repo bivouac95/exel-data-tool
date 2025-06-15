@@ -44,13 +44,26 @@ const Hud = observer(() => {
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
 
-        <Button
-          variant="secondary"
-          className="w-10 h-10 justify-center items-center"
-          size="icon"
-        >
-          <img src="/trash.svg" alt="Удалить" />
-        </Button>
+        {InitialDataState.isDeleting ? (
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={() => InitialDataState.setIsDeleting(false)}
+          >
+            <span className="regular">Отменить</span>
+          </Button>
+        ) : (
+          <Button
+            variant="secondary"
+            className="w-10 h-10 justify-center items-center"
+            size="icon"
+            onClick={() => {
+              InitialDataState.setIsDeleting(true);
+            }}
+          >
+            <img src="/trash.svg" alt="Удалить" />
+          </Button>
+        )}
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
 

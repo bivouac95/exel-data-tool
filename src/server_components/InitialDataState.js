@@ -54,6 +54,7 @@ class InitialDataState {
     this.isLoaded = false;
     this.isLoading = false;
     this.beingEdited = false;
+    this.isDeleting = false;
     makeAutoObservable(this);
   }
 
@@ -150,6 +151,10 @@ class InitialDataState {
     this.beingEdited = false;
   }
 
+  setIsDeleting(state) {
+    this.isDeleting = state;
+  }
+
   // Database operations
   async createTableSQL() {
     await createTable(this.sqlColumnNames, this.columnTypes);
@@ -177,6 +182,12 @@ class InitialDataState {
 
   async getSQLData() {
     console.log(await getData());
+  }
+
+  async deleteTable() {
+    this.isLoading = true;
+    await clearTable();
+    this.isLoaded = false;
   }
 
   // Getters

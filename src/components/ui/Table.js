@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { toast } from "sonner";
+import { Button } from "./button";
 
 const Table = observer(({ tableState }) => {
   const { columns, rows, rowOrder } = tableState;
@@ -129,6 +130,29 @@ const Table = observer(({ tableState }) => {
             <h2 className="truncate w-full">{column.name}</h2>
           </div>
         ))}
+      </div>
+      <div
+        className={
+          tableState.isDeleting
+            ? "absolute flex flex-col gap-[2px] pt-[82px] z-10"
+            : "hidden"
+        }
+      >
+        {rowOrder.map((rowId) => {
+          return (
+            <Button
+              key={rowId}
+              className="bg-green w-[48px] h-[48px] p-0 m-0 items-center justify-center"
+              onClick={() => {
+                tableState.deleteRow(rowId);
+                setEditingCell(null);
+                tableState.setIsDeleting(false);
+              }}
+            >
+              <img src="/close_white.svg" alt="Удалить" />
+            </Button>
+          );
+        })}
       </div>
       <div className="flex flex-col gap-[2px]">{memoizedRows}</div>
     </div>

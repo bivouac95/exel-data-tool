@@ -26,7 +26,7 @@ const Manage = observer(() => {
   }
 
   function deleteTables() {
-    if (selectedTables.length === 0) {
+    if (selectedTables.length === 0 && !isInitialTableSelected) {
       toast.warning("Выберите таблицы для удаления");
       return;
     }
@@ -36,11 +36,12 @@ const Manage = observer(() => {
     );
     if (!confirmed) return;
 
+    if (isInitialTableSelected) {
+      InitialDataState.deleteTable();
+    }
+
     selectedTables.forEach((table) => {
       switch (table.type) {
-        case "data":
-          InitialDataState.database.clearTable(table.id);
-          break;
         case "search":
           SearchState.deleteSearchQuery(table.id);
           break;
@@ -87,12 +88,19 @@ const Manage = observer(() => {
   }
 
   function exportTables() {
-    if (selectedTables.length === 0) {
+    if (selectedTables.length === 0 && !isInitialTableSelected) {
       toast.warning("Выберите таблицы для экспорта");
       return;
     }
 
     const wb = XLSX.utils.book_new();
+    if (isInitialTableSelected) {
+      let data = InitialDataState.jsonData;
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const sheetName = "Исходные данные";
+      XLSX.utils.book_append_sheet(wb, worksheet, sheetName.slice(0, 31));
+    }
+
     selectedTables.forEach((table) => {
       let data;
 
@@ -104,9 +112,6 @@ const Manage = observer(() => {
           case "report":
             data = ReportsStete.reports.find((r) => r.id === table.id)
               .tableState.jsonData;
-            break;
-          case "data":
-            data = InitialDataState.jsonData;
             break;
         }
 
