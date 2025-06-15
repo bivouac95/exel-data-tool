@@ -8,6 +8,8 @@ export async function getInitialDataState() {
 }
 
 export async function getSearchState() {
+  await InitialDataState.loadSQLData();
+  await SearchState.loadSQLData();
   return SearchState;
 }
 

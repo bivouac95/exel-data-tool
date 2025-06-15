@@ -2,7 +2,14 @@
 
 import { makeAutoObservable } from "mobx";
 import { nanoid } from "nanoid";
-import { createSearchQuery, getReportData, deleteTable } from "./database";
+import {
+  createSearchQuery,
+  getReportData,
+  deleteTable,
+  getTables,
+  getBetterColumns,
+  insertColumns,
+} from "./database";
 
 class TableColumn {
   constructor(name, sqlName) {
@@ -50,7 +57,7 @@ class TableState {
     }
   }
 
-  initializeColums(columns, name) {
+  initializeColums(columns) {
     this.columns = columns.map((c) => {
       return new TableColumn(c.name, c.sqlName);
     });
@@ -108,6 +115,15 @@ class SearchQuery {
       this.sqlName,
       this.name
     );
+
+    await insertColumns(
+      this.tableState.columns.map((c) => [
+        c.id,
+        c.sqlName,
+        c.name,
+        this.sqlName,
+      ])
+    );
   }
 
   async init(columns) {
@@ -149,6 +165,25 @@ class SearchState {
   async deleteSearchQuery(id) {
     deleteTable(this.searchQueries.get(id).sqlName);
     this.searchQueries.delete(id);
+  }
+
+  async loadSQLData() {
+    const searches = (await getTables()).filter((t) => t.type == "search");
+    for (let search of searches) {
+      const newQuery = new SearchQuery(
+        search.readable_name,
+        search.name,
+        "",
+        {}
+      );
+
+      newQuery.tableState.initializeColums(
+        await getBetterColumns(newQuery.sqlName)
+      );
+      newQuery.updateData();
+
+      this.searchQueries.set(search.id, newQuery);
+    }
   }
 }
 

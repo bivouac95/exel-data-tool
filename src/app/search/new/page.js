@@ -4,13 +4,22 @@ import { useRouter } from "next/navigation";
 import { observer } from "mobx-react-lite";
 import SearchFormDialog from "@/components/ui/SearchFormDialog";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getColumns, getBetterColumns } from "@/server_components/database";
 import SearchState from "@/server_components/SearchState";
 import InitialDataState from "@/server_components/InitialDataState";
 import { SquareLoader } from "react-spinners";
+import { getSearchState } from "@/server_components/statesManager";
 
 const Search = observer(() => {
+  const [loadedSearch, setLoadedSearch] = useState({});
+
+  useEffect(() => {
+    getSearchState().then((state) => {
+      setLoadedSearch(state);
+    });
+  });
+
   const [searchCreteria, setSearchCriteria] = useState({
     tableName: "data",
     columns: InitialDataState.sqlColumnNames,
@@ -30,7 +39,7 @@ const Search = observer(() => {
 
     columns = await getBetterColumns(searchCreteria.tableName);
 
-    const newQuery = await SearchState.addSearchQuery(
+    const newQuery = await loadedSearch.addSearchQuery(
       key,
       searchCreteria,
       columns

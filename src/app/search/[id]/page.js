@@ -8,16 +8,23 @@ import SearchState from "@/server_components/SearchState";
 import { useParams } from "next/navigation";
 import Table from "@/components/ui/TableGraphics";
 import { toast } from "sonner";
+import { getSearchState } from "@/server_components/statesManager";
 
 const Search = observer(() => {
+  const [loadedSearch, setLoadedSearch] = useState({});
   const searchId = useParams().id;
   const [searchResultTable, setSearchResultTable] = useState([]);
   const [searchQuery, setSearchQuery] = useState({});
 
   useEffect(() => {
-    const table = SearchState.searchQueries.get(searchId);
-    setSearchQuery(table);
-    setSearchResultTable(table.tableState);
+    getSearchState().then((state) => {
+      setLoadedSearch(state);
+      const table = state.searchQueries.get(searchId);
+      setSearchQuery(table);
+      setSearchResultTable(table.tableState);
+
+      console.log("searchQuery: ", table);
+    });
   }, []);
 
   const update = () => {
@@ -34,7 +41,7 @@ const Search = observer(() => {
     );
     if (!confirmed) return;
 
-    SearchState.deleteSearchQuery(searchId);
+    loadedSearch.deleteSearchQuery(searchId);
     router.push("seacrh/new");
   };
 
