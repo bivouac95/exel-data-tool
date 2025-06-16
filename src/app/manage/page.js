@@ -96,9 +96,13 @@ const Manage = observer(() => {
   }
 
   function syncTables() {
-    if (selectedTables.length === 0) {
+    if (selectedTables.length === 0 && !isInitialTableSelected) {
       toast.warning("Выберите таблицы для синхронизации");
       return;
+    }
+
+    if (isInitialTableSelected) {
+      loadedData.syncData();
     }
 
     selectedTables.forEach((table) => {
@@ -110,9 +114,6 @@ const Manage = observer(() => {
         case "report":
           const report = loadedReports.reports.find((r) => r.id === table.id);
           if (report?.updateData) report.updateData();
-          break;
-        case "data":
-          // ничего не делать
           break;
       }
     });

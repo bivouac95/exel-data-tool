@@ -91,6 +91,23 @@ class InitialDataState {
     }
   }
 
+  async loadDataFromDocument(file) {
+    if (!file) return;
+
+    try {
+      this.startLoading();
+      const json = await parseDocument(file);
+      this.jsonData = json;
+      this.initializeRows(json);
+      this.finishLoading();
+    } catch (error) {
+      console.error("Document processing error:", error);
+      this.finishLoading();
+      throw error;
+    }
+    await insertRows(this.rowValuesWithIds, ["id", ...this.sqlColumnNames]);
+  }
+
   async initializeColumns(json) {
     if (!json.length) return;
 
@@ -190,16 +207,21 @@ class InitialDataState {
   async loadSQLData() {
     if (!this.isLoaded) {
       this.startLoading();
-      const data = await getData();
-      if (data.length == 0) {
+      let data = [];
+      try {
+        data = await getData();
+      } catch (error) {
         this.isLoaded = false;
         this.isLoading = false;
         return;
       }
 
       const columns = await getBetterColumns("data");
-      let columnTypes = await parseColumnTypes(Object.values(data[0]));
-      columnTypes.shift();
+      let columnTypes = [];
+      if (!data.length == 0) {
+        columnTypes = await parseColumnTypes(Object.values(data[0]));
+        columnTypes.shift();
+      }
 
       this.columns = columns.map(
         //id, sqlName, name, tableName
@@ -216,6 +238,18 @@ class InitialDataState {
 
       this.finishLoading();
     }
+  }
+
+  async syncData() {
+    this.jsonData = [];
+    this.rows = new Map();
+    this.rowOrder = [];
+    this.columns = [];
+    this.isLoaded = false;
+    this.isLoading = false;
+    this.beingEdited = false;
+    this.isDeleting = false;
+    this.loadSQLData();
   }
 
   // Getters

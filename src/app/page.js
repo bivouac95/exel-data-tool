@@ -1,12 +1,12 @@
 "use client";
 
 import { observer } from "mobx-react-lite";
-import InitialDataState from "@/server_components/InitialDataState";
 import Table from "@/components/ui/Table";
 import Hud from "../components/ui/Hud";
 import { getInitialDataState } from "@/server_components/statesManager";
 import { SquareLoader } from "react-spinners";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const Home = observer(() => {
   const [initialData, setInitialData] = useState({
@@ -32,7 +32,7 @@ const Home = observer(() => {
               <div className="flex flex-col gap-5 w-full">
                 <img src="/digit_1.png" alt="" />
                 <p className="regular">
-                  Загрузите <b>Приложение 1</b> или любую другую таблицу в
+                  Загрузите <Link href="/help#appendix1" className="font-bold">Приложение 1</Link> или любую другую таблицу в
                   формате Exel, с которой вы собираетесь работать
                 </p>
               </div>
@@ -40,7 +40,7 @@ const Home = observer(() => {
                 <img src="/digit_2.png" alt="" />
                 <p className="regular">
                   Если вы уже проделывали работу с такой таблицей, загрузите{" "}
-                  <b>прессет проекта</b>, чтобы сохранить вид итоговых таблиц и
+                  <Link href="/help#preset" className="font-bold">прессет проекта</Link>, чтобы сохранить вид итоговых таблиц и
                   способ их заполнения
                 </p>
               </div>

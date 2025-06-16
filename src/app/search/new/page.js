@@ -5,11 +5,10 @@ import { observer } from "mobx-react-lite";
 import SearchFormDialog from "@/components/ui/SearchFormDialog";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { getColumns, getBetterColumns } from "@/server_components/database";
-import SearchState from "@/server_components/SearchState";
-import InitialDataState from "@/server_components/InitialDataState";
+import { getBetterColumns } from "@/server_components/database";
 import { SquareLoader } from "react-spinners";
 import { getSearchState } from "@/server_components/statesManager";
+import Link from "next/link";
 
 const Search = observer(() => {
   const [loadedSearch, setLoadedSearch] = useState({});
@@ -22,7 +21,7 @@ const Search = observer(() => {
 
   const [searchCreteria, setSearchCriteria] = useState({
     tableName: "data",
-    columns: InitialDataState.sqlColumnNames,
+    columns: loadedSearch.sqlColumnNames,
     regex: false,
   });
   const [key, setKey] = useState("");
@@ -89,17 +88,26 @@ const Search = observer(() => {
             <div className="flex flex-col gap-5 w-full">
               <img src="/digit_2.png" alt="" />
               <p className="regular">
-                Откройте <b>Параметры поиска</b> и выберите таблицу, по которой
-                будет проводиться поиск. По умолчанию - это таблица с исходными
-                данными
+                Откройте{" "}
+                <Link href="/help#searchParams" className="font-bold">
+                  Параметры поиска
+                </Link>{" "}
+                и выберите таблицу, по которой будет проводиться поиск. По
+                умолчанию - это таблица с исходными данными
               </p>
             </div>
             <div className="flex flex-col gap-5 w-full">
               <img src="/digit_3.png" alt="" />
               <p className="regular">
-                Используйте синтаксис <b>Регулярных выражений</b>, если столбец
-                в вашей строке содержит много лишних символов. Для этого
-                включите эту функцию в <b>Параметрах поиска</b>
+                Используйте синтаксис{" "}
+                <Link href="/help#regex" className="font-bold">
+                  Регулярных выражения
+                </Link>
+                , если столбец в вашей строке содержит много лишних символов.
+                Для этого включите эту функцию в{" "}
+                <Link href="/help#searchParams" className="font-bold">
+                  Параметрах поиска
+                </Link>
               </p>
             </div>
             <div className="flex flex-col gap-5 w-full">

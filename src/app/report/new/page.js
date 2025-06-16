@@ -23,6 +23,7 @@ import PressetsForm from "@/components/ui/PressetsForm";
 import ReportsStete from "@/server_components/ReportsStete";
 import { useRouter } from "next/navigation";
 import { SquareLoader } from "react-spinners";
+import Link from "next/link";
 
 class FormColumn {
   constructor(defaultColumns) {
@@ -369,24 +370,14 @@ const Report = observer(() => {
                   <div className="flex flex-col gap-5 w-full">
                     <img src="/digit_2.png" alt="" />
                     <p className="regular">
-                      Откройте <b>Параметры отчета</b> и добавьте колонки, из
-                      которых состоит отчет. Дайте им названия и укажите их типы
-                      данных
+                      Нажмите кнопку “Новая колонка” и выберите метод ее
+                      формирования. Данные могут формироваться с помощью{" "}
+                      <Link href="/help#sql" className="font-bold">SQL запроса</Link> или данными из другой таблицы
                     </p>
                   </div>
                   <div className="flex flex-col gap-5 w-full">
                     <img src="/digit_3.png" alt="" />
-                    <p className="regular">
-                      Напишите <b>SQL запрос</b>, с помощью которого будет
-                      формироваться отчет
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-5 w-full">
-                    <img src="/digit_4.png" alt="" />
-                    <p className="regular">
-                      Сохраните или экспортируйте получившиеся данные как новый
-                      отчет
-                    </p>
+                    <p className="regular">Нажмите кнопку “Выполнить запрос”</p>
                   </div>
                 </div>
               </>

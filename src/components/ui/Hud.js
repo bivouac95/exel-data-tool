@@ -3,11 +3,9 @@
 import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
 import InitialDataState from "../../server_components/InitialDataState";
-import { useRouter } from "next/navigation";
+import TableActionsDialog from "./TableActionsDialog";
 
 const Hud = observer(() => {
-  const router = useRouter();
-
   return (
     <div className="fixed z-10 bottom-0 left-0 w-screen flex justify-center items-center p-5">
       <nav className="flex flex-row gap-5 rounded-d bg-foreground/30  py-2.5 px-10 items-center">
@@ -67,13 +65,7 @@ const Hud = observer(() => {
 
         <div className="w-[1px] h-8 border-l-[2px] border-background" />
 
-        <Button
-          variant="ghost bg-background/50"
-          className="w-10 h-10 justify-center items-center"
-          size="icon"
-        >
-          <img src="/dots.svg" alt="Другое" />
-        </Button>
+        <TableActionsDialog />
       </nav>
     </div>
   );
