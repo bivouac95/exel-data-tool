@@ -42,9 +42,9 @@ const createWindow = async () => {
       devTools: false,
       nodeIntegration: true,
     },
+    icon: path.resolve(process.cwd(), "src", "app", "favicon.ico"),
   });
 
-  // Убираем менюшку
   Menu.setApplicationMenu(null);
 
   // ⬇ Next.js handler ⬇
