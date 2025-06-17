@@ -63,6 +63,11 @@ class TableState {
     }
   }
 
+  clear() {
+    this.rowOrder = [];
+    this.rows.clear();
+  }
+
   get jsonData() {
     const objectKeys = this.columns.map((c) => c.name);
     let result = [];
@@ -136,8 +141,7 @@ class Report {
 
   async updateData() {
     this.tableState.startLoading();
-    this.tableState.rowOrder = [];
-    this.tableState.rows.clear();
+    this.tableState.clear();
     this.tableState.initializeRows(await getReportData(this.sqlName));
     this.tableState.finishLoading();
   }
@@ -158,7 +162,7 @@ class ReportsStete {
 
   async deleteReport(id) {
     const report = this.reports.find((r) => r.id === id);
-    deleteTable(report.sqlName);
+    await deleteTable(report.sqlName);
     this.reports = this.reports.filter((r) => r.id !== id);
   }
 

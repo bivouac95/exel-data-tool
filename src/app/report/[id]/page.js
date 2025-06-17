@@ -34,14 +34,6 @@ const Report = observer(() => {
     }
   };
 
-  const deleteReport = () => {
-    const confirmed = confirm("Вы уверены, что хотите удалить этот отчет?");
-    if (!confirmed) return;
-
-    loadedReports.deleteReport(reportId);
-    router.push("report/new");
-  };
-
   return (
     <>
       {reportResultTable.isLoaded ? (
@@ -54,7 +46,7 @@ const Report = observer(() => {
                 <span className="regular">Обновить</span>
               </Button>
 
-              <Button size="lg" variant="secondary" onClick={deleteReport}>
+              <Button size="lg" variant="secondary" onClick={() => router.push("/manage")}>
                 <img src="/trash.svg" alt="Удалить" />
                 <span className="regular">Удалить</span>
               </Button>

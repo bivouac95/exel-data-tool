@@ -4,14 +4,15 @@ import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
 import { SquareLoader } from "react-spinners";
 import { useState, useEffect } from "react";
-import SearchState from "@/server_components/SearchState";
 import { useParams } from "next/navigation";
 import Table from "@/components/ui/TableGraphics";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { getSearchState } from "@/server_components/statesManager";
 
 const Search = observer(() => {
   const [loadedSearch, setLoadedSearch] = useState({});
+  const router = useRouter();
   const searchId = useParams().id;
   const [searchResultTable, setSearchResultTable] = useState([]);
   const [searchQuery, setSearchQuery] = useState({});
@@ -33,16 +34,6 @@ const Search = observer(() => {
     }
   };
 
-  const deleteSearch = () => {
-    const confirmed = confirm(
-      "Вы уверены, что хотите удалить этот поисковой запрос?"
-    );
-    if (!confirmed) return;
-
-    loadedSearch.deleteSearchQuery(searchId);
-    router.push("seacrh/new");
-  };
-
   return (
     <>
       {searchResultTable.isLoaded ? (
@@ -55,7 +46,11 @@ const Search = observer(() => {
                 <span className="regular">Обновить</span>
               </Button>
 
-              <Button size="lg" variant="secondary" onClick={deleteSearch}>
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => router.push("/manage")}
+              >
                 <img src="/trash.svg" alt="Удалить" />
                 <span className="regular">Удалить</span>
               </Button>

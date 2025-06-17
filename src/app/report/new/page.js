@@ -76,11 +76,20 @@ class FormColumns {
     this.columns = new Map();
     this.columnsOrder = [];
     this.reportName = "";
+    this.reportNameError = "";
     makeAutoObservable(this);
   }
 
   setReportName(name) {
     this.reportName = name;
+    const hasLetter = /[a-zA-Zа-яА-Я]/.test(name); // Checks for at least one letter (Latin or Cyrillic)
+    const isOnlyDigits = /^\d+$/.test(name); // Checks if the string is only digits
+    if (!hasLetter || isOnlyDigits) {
+      this.reportNameError =
+        "Название отчета должно содержать хотя бы одну букву и не состоять только из цифр";
+    } else {
+      this.reportNameError = "";
+    }
   }
 
   async addColumn() {
@@ -113,7 +122,7 @@ class FormColumns {
   }
 
   get isDisabled() {
-    if (!this.reportName.trim()) return true;
+    if (!this.reportName.trim() || this.reportNameError) return true;
     if (this.columns.size === 0) return true;
 
     for (const columnId of this.columnsOrder) {
@@ -159,14 +168,23 @@ const Report = observer(() => {
             <div className="flex flex-col gap-5">
               <h2>Отчет</h2>
               <div className="flex flex-col gap-5">
-                <input
-                  id="report-name"
-                  type="text"
-                  className="regular bg-gray w-full h-10 px-5 rounded-d"
-                  placeholder="Введите название отчета"
-                  value={forms.reportName}
-                  onChange={(e) => forms.setReportName(e.target.value)}
-                />
+                <div className="flex flex-col gap-2">
+                  <input
+                    id="report-name"
+                    type="text"
+                    className={`regular bg-gray w-full h-10 px-5 rounded-d ${
+                      forms.reportNameError ? "border-red-500 border-2" : ""
+                    }`}
+                    placeholder="Введите название отчета"
+                    value={forms.reportName}
+                    onChange={(e) => forms.setReportName(e.target.value)}
+                  />
+                  {forms.reportNameError && (
+                    <p className="text-red-500 text-sm">
+                      {forms.reportNameError}
+                    </p>
+                  )}
+                </div>
                 <div className="flex flex-col gap-2.5">
                   <h2>Колонки</h2>
                   <p>
@@ -202,7 +220,7 @@ const Report = observer(() => {
             </div>
 
             {forms.columns.size != 0 ? (
-              <div className="flex flex-row gap-5">
+              <div className="flex flex-row gap-5 mb-10">
                 {forms.columnsOrder.map((columnId) => (
                   <div
                     key={columnId}
@@ -372,7 +390,10 @@ const Report = observer(() => {
                     <p className="regular">
                       Нажмите кнопку “Новая колонка” и выберите метод ее
                       формирования. Данные могут формироваться с помощью{" "}
-                      <Link href="/help#sql" className="font-bold">SQL запроса</Link> или данными из другой таблицы
+                      <Link href="/help#sql" className="font-bold">
+                        SQL запроса
+                      </Link>{" "}
+                      или данными из другой таблицы
                     </p>
                   </div>
                   <div className="flex flex-col gap-5 w-full">

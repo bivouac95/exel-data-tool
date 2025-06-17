@@ -7,26 +7,37 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { getBetterColumns } from "@/server_components/database";
 import { SquareLoader } from "react-spinners";
-import { getSearchState } from "@/server_components/statesManager";
+import {
+  getSearchState,
+  getInitialDataState,
+} from "@/server_components/statesManager";
 import Link from "next/link";
 
 const Search = observer(() => {
   const [loadedSearch, setLoadedSearch] = useState({});
+  const [searchCreteria, setSearchCriteria] = useState({
+    tableName: "data",
+    columns: [],
+    regex: false,
+  });
+
+  const [key, setKey] = useState("");
+  const [isLoaded, setIsLoaded] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     getSearchState().then((state) => {
       setLoadedSearch(state);
     });
-  });
 
-  const [searchCreteria, setSearchCriteria] = useState({
-    tableName: "data",
-    columns: loadedSearch.sqlColumnNames,
-    regex: false,
-  });
-  const [key, setKey] = useState("");
-  const [isLoaded, setIsLoaded] = useState(true);
-  const router = useRouter();
+    getInitialDataState().then((state) => {
+      setSearchCriteria({
+        tableName: "data",
+        columns: state.sqlColumnNames,
+        regex: false,
+      });
+    });
+  }, []);
 
   const onSubmit = (criteria) => {
     setSearchCriteria(criteria);
