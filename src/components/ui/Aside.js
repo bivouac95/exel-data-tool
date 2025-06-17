@@ -56,7 +56,12 @@ const Aside = observer(() => {
               Загрузить таблицу
             </span>
 
-            <span className="cursor-pointer regular text-background">
+            <span
+              className="cursor-pointer regular text-background"
+              onClick={() => {
+                toast("Система прессетов находится в разработке");
+              }}
+            >
               Загрузить прессет
             </span>
           </>
@@ -99,17 +104,20 @@ const Aside = observer(() => {
             <h2>Ссылки</h2>
             <ul className="flex flex-col gap-2.5">
               <li>
-                <Link href="/" className="regular">
+                <Link
+                  href="https://baykal.rcfh.ru/fburosles/istoriya/"
+                  className="regular"
+                >
                   Об организации
                 </Link>
               </li>
               <li>
-                <Link href="/" className="regular">
-                  О сайте
+                <Link href="/about" className="regular">
+                  Об инструменте
                 </Link>
               </li>
               <li>
-                <Link href="/" className="regular">
+                <Link href="/help" className="regular">
                   Помощь
                 </Link>
               </li>
